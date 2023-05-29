@@ -16,13 +16,51 @@ const db = new pg.Pool({
 })
 
 server.get('/db', async (req, res)=>{
-    const datos = await db.query('select * from table')
+  //  const datos = await db.query('select * from table')
 
 
 })
 
 server.get('/', (req, res)=>{
     res.send('hola desde el servidor')
+
+})
+
+// 3 formas de recibir algo: req.body (cuando le manda el json al front), req.params, req.query
+
+// se puede mandar un status haciendo res.sendStatus(500)
+
+
+/* {
+
+    fila integer,
+    columna integer
+
+} */
+server.post('/cinema-room', async (req, res) => {
+
+   if (!req.body.id_sucursal || typeof(req.body.id_sucursal) != 'number'||!req.body.fila || typeof(req.body.fila) != 'number' || !req.body.columna || typeof(req.body.columna) != 'number') {
+
+    res.sendStatus(400);
+    return;
+
+   }
+
+
+   const sala = await db.query('insert into sala (id_sucursal) values($1) returning *', [req.body.id_sucursal])
+
+   const multiplicacion = fila * columna
+
+   for (let i = 0; i < multiplicacion; i++) {
+    const asientos = await db.query('insert into asientos (nro_asiento, id_sala, reservada) values($1, $2, $3)',
+     [i+1, sala.rows[0].id, false])
+   }
+
+
+
+
+   res.sendStatus(200)
+
 
 })
 
