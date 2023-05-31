@@ -53,14 +53,14 @@ CREATE TABLE asientos (
 )
 
 CREATE TABLE "socio" (
-  "id_socio" integer PRIMARY KEY,
+  "id_socio" serial PRIMARY KEY,
   "email" varchar,
   "password" varchar,
   "id_empresa" integer FOREIGN KEY "empresa"("id")
 );
 
 CREATE TABLE "empresa" (
-    "id" integer PRIMARY KEY,
+    "id" serial PRIMARY KEY,
     "nombre" varchar,
     "imagen" varchar
 )
