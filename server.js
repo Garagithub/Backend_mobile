@@ -65,6 +65,7 @@ const {id_sucursal, fila, columna}= req.body;
 
 })
 server.post("/api/users",async (req,res)=>{
+  try{
   const { password, email, company,imagen } = req.body;
   
   if (!imagen || typeof(imagen)!=string || !password || typeof(password)!=string ||!email ||typeof(email)!=string ||!email.includes("@") || !company || typeof(company)!= string ){
@@ -81,10 +82,16 @@ server.post("/api/users",async (req,res)=>{
   const salt=await bcrypt.genSalt(10)
   const hashed_password=await bcrypt.hash(password,salt)
   const register_empresa=await db.query("insert into empresa (nombre,imagen) values ($1,$2) returning *",[company,imagen])
-  const register_socio=await db.query("insert into socios (email,password, id_empresa) values($1,$2,$3) ",[email,hashed_password,register_empresa.rows[0].id])
-  const token= 
-  
-  res.status(201).json({token:null})
+  const register_socio=await db.query("insert into socios (email,password, id_empresa) values($1,$2,$3) returning *",[email,hashed_password,register_empresa.rows[0].id])
+  const payload = {
+    user: {
+      id: register_socio.rows[0].id
+    }}
+  const token= jwt.sign (payload,"password123",{expiresIn:"48hr"},)
+
+  res.status(201).json({token:token})
+}
+catch(er){res.sendStatus(500)}
 })
 
 server.listen(port,()=> console.log('El servidor está escuchando en localhost: '+ port));
