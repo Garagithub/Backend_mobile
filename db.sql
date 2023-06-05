@@ -93,8 +93,28 @@ CREATE TABLE "socio" (
   "id_socio" serial PRIMARY KEY,
   "email" varchar,
   "password" varchar,
-  "id_empresa" integer,
-  FOREIGN KEY (id_empresa) references "empresa"("id")
+  "id_empresa" integer FOREIGN KEY "empresa"("id")
+);
+
+CREATE TABLE "empresa" (
+    "id" integer PRIMARY KEY,
+    "nombre" varchar,
+    "imagen" varchar
+)
+
+CREATE TABLE "usuario" (
+  "id_user" integer PRIMARY KEY,
+  "nombre" varchar,
+  "apellido" varchar,
+  "imagen" varchar
+);
+
+CREATE TABLE "comentarios" (
+  "id_comentario" integer PRIMARY KEY,
+  "rating" integer,
+  "comentario" varchar,
+  "id_user" integer,
+  "id_pelicula" integer
 );
 
 
