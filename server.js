@@ -38,6 +38,39 @@ server.get('/', (req, res)=>{
     columna integer
 
 } */
+
+server.post("/api/auths", async (req,res)=>{
+
+  try {
+    const { email, password } = req.body;
+
+    const user = await pool.query(`
+        SELECT *
+        FROM socios
+        WHERE email = $1;
+    `, [email]);
+
+    if (user.rows.length === 0) {
+        return res.status(401).json('Password or email is incorrect');
+
+    } 
+
+    const validPassword = await bcrypt.compare(password, user.rows[0].pass);
+    if (!validPassword){
+        return res.status(401).json('Password or email is incorrect');
+
+    } 
+
+    const token = jwtGenerator(user.rows[0].id);
+    res.json({ token });
+
+} catch(error) {
+    res.status(500).send();
+}
+
+});
+
+
 server.post('/cinema-room', async (req, res) => {
 const {id_sucursal, fila, columna}= req.body;
    if (!id_sucursal || typeof(id_sucursal) != 'number'||!fila || typeof(fila) != 'number' || !columna || typeof(columna) != 'number') {
@@ -64,6 +97,10 @@ const {id_sucursal, fila, columna}= req.body;
 
 
 })
+
+server.put()
+
+
 server.post("/api/users",async (req,res)=>{
   try{
   const { password, email, company,imagen } = req.body;
@@ -128,52 +165,20 @@ server.delete("/api/cinema/{id_cinema}/branches/{id_branch}", async (req,res)=>{
 
   try {
     //revisar este try esta raro
-   const existesucursal= await db.query("select nombre from sucursales where id=$1", [id_sucursal])
+   const existesucursal= await db.query("select nombre from sucursal where id=$1", [id_sucursal])
    if (existesucursal.rows.length===0 ){
    
      res.status(400).send("There is no branch whit this id");
  
      return;
    }
-    await db.query('DELETE FROM sucursales WHERE id = $1', [id_sucursal]);
+    await db.query('DELETE FROM sucursal WHERE id = $1', [id_sucursal]);
 
     res.sendStatus(200);
   } catch (error) {
     console.error('Error al eliminar la sucursal:', error);
     res.sendStatus(500);
   }
-});
-
-
-server.post("/api/auths", async (req,res)=>{
-
-  try {
-    const { email, password } = req.body;
-
-    const user = await pool.query(`
-        SELECT *
-        FROM socios
-        WHERE email = $1;
-    `, [email]);
-
-    if (user.rows.length === 0) {
-        return res.status(401).json('Password or email is incorrect');
-
-    } 
-
-    const validPassword = await bcrypt.compare(password, user.rows[0].pass);
-    if (!validPassword){
-        return res.status(401).json('Password or email is incorrect');
-
-    } 
-
-    const token = jwtGenerator(user.rows[0].id);
-    res.json({ token });
-
-} catch(error) {
-    res.status(500).send();
-}
-
 });
 
 
