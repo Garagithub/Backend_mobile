@@ -156,11 +156,11 @@ server.post("/api/users",async (req,res)=>{
   try{
   const { password, email, company,imagen } = req.body;
   
-  if (!imagen || typeof(imagen)!=string || !password || typeof(password)!=string ||!email ||typeof(email)!=string ||!email.includes("@") || !company || typeof(company)!= string ){
+  if (!imagen || typeof(imagen)!= 'string' || !password || typeof(password)!='string' ||!email ||typeof(email)!='string' ||!email.includes("@") || !company || typeof(company)!= 'string' ){
     res.sendStatus(400);
     return;
   }
-  const userexiste= await db.query("select email from socio where email=$1", [email])
+  const userexiste= await db.query("select email from socios where email=$1", [email])
   if (userexiste.rows.length>=1 ){
   
     res.status(400).send("There is already an email asociate to this account");
@@ -169,7 +169,7 @@ server.post("/api/users",async (req,res)=>{
   }
   const salt=await bcrypt.genSalt(10)
   const hashed_password=await bcrypt.hash(password,salt)
-  const register_empresa=await db.query("insert into empresa (nombre,imagen) values ($1,$2) returning *",[company,imagen])
+  const register_empresa=await db.query("insert into empresas (nombre,imagen) values ($1,$2) returning *",[company,imagen])
   const register_socio=await db.query("insert into socios (email,password, id_empresa) values($1,$2,$3) returning *",[email,hashed_password,register_empresa.rows[0].id])
   const payload = {
     user: {
@@ -179,7 +179,9 @@ server.post("/api/users",async (req,res)=>{
 
   res.status(201).json({token:token})
 }
-catch(er){res.sendStatus(500)}
+catch(er){res.sendStatus(500)
+console.log(er)}
+
 })
 
 server.post("/api/cinema/{id_cinema}/branches", async (req, res) => {
@@ -193,7 +195,7 @@ server.post("/api/cinema/{id_cinema}/branches", async (req, res) => {
     res.sendStatus(400);
     return;
   }
-  const sucursalexiste= await db.query("select nombre from sucursal where nombre=$1", [nombre])
+  const sucursalexiste= await db.query("select nombre from sucursales where nombre=$1", [nombre])
   if (sucursalexiste.rows.length>=1 ){
   
     res.status(400).send("There is already a branch with this name");
@@ -201,11 +203,12 @@ server.post("/api/cinema/{id_cinema}/branches", async (req, res) => {
     return;
   }
   
-    const sucursal = await db.query("INSERT INTO sucursal (id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado) " +
+    const sucursal = await db.query("INSERT INTO sucursales (id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado) " +
                                     "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
                                     [id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado]);
     res.sendStatus(200);
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
