@@ -62,7 +62,7 @@ server.post("/api/auths", async (req,res)=>{
     } 
 
     const token= jwt.sign(payload,"password123",{expiresIn:"48hr"},)
-    res.json({ token });
+    res.json({token:token});
 
 } catch(error) {
     res.status(500).send();
