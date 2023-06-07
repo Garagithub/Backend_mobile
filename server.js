@@ -184,14 +184,14 @@ console.log(er)}
 
 })
 
-server.post("/api/cinema/{id_cinema}/branches", async (req, res) => {
+server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   try {
   const { id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado } = req.body;
   
   if (!id || typeof(id) !== 'number' || !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
       !provincia || typeof(provincia) !== 'string' || !localidad || typeof(localidad) !== 'string' ||
       !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
-      !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean') {
+      !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean'||!cerrado) {
     res.sendStatus(400);
     return;
   }
@@ -203,9 +203,7 @@ server.post("/api/cinema/{id_cinema}/branches", async (req, res) => {
     return;
   }
   
-    const sucursal = await db.query("INSERT INTO sucursales (id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado) " +
-                                    "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
-                                    [id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado]);
+  const sucursal = await db.query("INSERT INTO sucursales (id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",[id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado]);
     res.sendStatus(200);
   }
   catch (error) {
@@ -214,19 +212,20 @@ server.post("/api/cinema/{id_cinema}/branches", async (req, res) => {
   }
 });
 
-server.delete("/api/cinema/{id_cinema}/branches/{id_branch}", async (req,res)=>{
-  const id_sucursal = req.params.id_sucursal;
+server.delete("/api/cinema/:id_cinema/branches/:id_branch", async (req,res)=>{
+  const id_sucursal = req.params.id_branch;
+  const id_empresa = req.params.id_cinema;
 
   try {
     //revisar este try esta raro
-   const existesucursal= await db.query("select nombre from sucursal where id=$1", [id_sucursal])
+   const existesucursal= await db.query("select nombre from sucursales where id=$1", [id_sucursal])
    if (existesucursal.rows.length===0 ){
    
      res.status(400).send("There is no branch whit this id");
  
      return;
    }
-    await db.query('DELETE FROM sucursal WHERE id = $1', [id_sucursal]);
+    await db.query('DELETE FROM sucursales WHERE id = $1', [id_sucursal]);
 
     res.sendStatus(200);
   } catch (error) {
