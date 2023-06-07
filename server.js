@@ -61,7 +61,7 @@ server.post("/api/auths", async (req,res)=>{
 
     } 
 
-    const token = jwtGenerator(user.rows[0].id);
+    const token= jwt.sign(payload,"password123",{expiresIn:"48hr"},)
     res.json({ token });
 
 } catch(error) {
