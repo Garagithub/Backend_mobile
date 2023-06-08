@@ -72,7 +72,8 @@ server.post("/api/auths", async (req,res)=>{
 
 
 server.post('/cinema-room', async (req, res) => {
-const {id_sucursal, fila, columna}= req.body;
+
+const { id_sucursal, fila, columna}= req.body;
    if (!id_sucursal || typeof(id_sucursal) != 'number'||!fila || typeof(fila) != 'number' || !columna || typeof(columna) != 'number') {
 
     res.sendStatus(400);
@@ -81,13 +82,12 @@ const {id_sucursal, fila, columna}= req.body;
    }
 
 
-   const sala = await db.query('insert into sala (id_sucursal) values($1) returning *', [id_sucursal])
+   const sala = await db.query('insert into salas (id_sucursal) values($1) returning *', [id_sucursal])
 
    const multiplicacion = fila * columna
 
    for (let i = 0; i < multiplicacion; i++) {
-    const asientos = await db.query('insert into asientos (nro_asiento, id_sala, reservada) values($1, $2, $3)',
-     [i+1, sala.rows[0].id, false])
+    const asientos = await db.query('insert into asientos (nro_asiento, id_sala, reservada) values($1, $2, $3)',[i+1, sala.rows[0].id, false])
    }
 
 
@@ -98,25 +98,33 @@ const {id_sucursal, fila, columna}= req.body;
 
 })
 
-server.put('/cinema-room/:id_sala', async (req, res) => {
+server.put('/cinema-room/:id_sala/update', async (req, res) => {
   try {
     const { id_sala } = req.params;
-    const { fila, columna } = req.body;
+    const {id_sucursal, fila, columna } = req.body;
 
     if (!id_sala || typeof(id_sala) !== 'number' || !fila || typeof(fila) !== 'number' ||
-        !columna || typeof(columna) !== 'number') {
+        !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number') {
       res.sendStatus(400);
       return;
     }
 
-    const sala = await db.query('SELECT * FROM sala WHERE id = $1', [id_sala]);
+    const sala = await db.query('SELECT * FROM salas WHERE id = $1 returning *', [id_sala]);
 
     if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
       return;
     }
+    //pensar bien esto con el tema de asientos y demas
+    const salas = await db.query('insert into salas (id_sucursal) values($1) returning *', [id_sucursal])
+    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 returning *', [id_sala])
+    const eliminar_sala= await db.query('delete from salas where id=$1',[id_sala])
+    const 
+    const multiplicacion = fila * columna
 
-    // Realizar la lógica de actualización de la sala de cine aquí
+   for (let i = 0; i < multiplicacion; i++) {
+    const asientos = await db.query('insert into asientos (nro_asiento, id_sala, reservada) values($1, $2, $3)',[i+1, sala.rows[0].id, false])
+   }
 
     res.sendStatus(200);
   } catch (error) {
