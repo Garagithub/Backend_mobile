@@ -3,6 +3,7 @@ const pg = require("pg")
 const bcrypt= require("bcrypt");
 const server = express();
 const jwt= require("jsonwebtoken");
+const res = require("express/lib/response");
 const port = process.env.PORT | 4000
 
 server.use(express.json());
@@ -73,8 +74,8 @@ server.post("/api/auths", async (req,res)=>{
 
 server.post('/cinema-room', async (req, res) => {
 
-const { id_sucursal, fila, columna}= req.body;
-   if (!id_sucursal || typeof(id_sucursal) != 'number'||!fila || typeof(fila) != 'number' || !columna || typeof(columna) != 'number') {
+const { id_sucursal, fila, columna, numero_sala}= req.body;
+   if (!id_sucursal || typeof(id_sucursal) != 'number'||!fila || typeof(fila) != 'number' || !columna || typeof(columna) != 'number' || !numero_sala || typeof(numero_sala)!=='number' ) {
 
     res.sendStatus(400);
     return;
@@ -82,7 +83,7 @@ const { id_sucursal, fila, columna}= req.body;
    }
 
 
-   const sala = await db.query('insert into salas (id_sucursal) values($1) returning *', [id_sucursal])
+   const sala = await db.query('insert into salas (id_sucursal,numero_sala) values($1,$2) returning *', [id_sucursal,numero_sala])
 
    const multiplicacion = fila * columna
 
@@ -98,32 +99,31 @@ const { id_sucursal, fila, columna}= req.body;
 
 })
 
-server.put('/cinema-room/:id_sala/update', async (req, res) => {
+server.put('/cinema-room/update', async (req, res) => {
   try {
-    const { id_sala } = req.params;
-    const {id_sucursal, fila, columna } = req.body;
+    const {id_sucursal, fila, columna, numero_sala } = req.body;
 
-    if (!id_sala || typeof(id_sala) !== 'number' || !fila || typeof(fila) !== 'number' ||
-        !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number') {
+    if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
+        || typeof(numero_sala)!=='number' ) {
       res.sendStatus(400);
       return;
     }
 
-    const sala = await db.query('SELECT * FROM salas WHERE id = $1 returning *', [id_sala]);
+    const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
 
     if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
       return;
     }
     //pensar bien esto con el tema de asientos y demas
-    const salas = await db.query('insert into salas (id_sucursal) values($1) returning *', [id_sucursal])
-    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 returning *', [id_sala])
-    const eliminar_sala= await db.query('delete from salas where id=$1',[id_sala])
-    const 
+    const salas = await db.query('select * from salas where (id_sucursal=$1 and numero_sala=$2 )', [id_sucursal,numero_sala])
+    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [salas.rows[0].id])
+    
+   
     const multiplicacion = fila * columna
 
    for (let i = 0; i < multiplicacion; i++) {
-    const asientos = await db.query('insert into asientos (nro_asiento, id_sala, reservada) values($1, $2, $3)',[i+1, sala.rows[0].id, false])
+    const asientos = await db.query('insert into asientos (nro_asiento, id_sala, reservada) values($1, $2, $3) returning *',[i+1, sala.rows[0].id, false])
    }
 
     res.sendStatus(200);
@@ -133,23 +133,23 @@ server.put('/cinema-room/:id_sala/update', async (req, res) => {
   }
 });
 
-server.delete('/cinema-room/:id_sala', async (req, res) => {
+server.delete('/cinema-room/delete', async (req, res) => {
   try {
-    const { id_sala } = req.params;
+    const { id_sucursal,numero_sala } = req.body;
 
-    if (!id_sala || typeof(id_sala) !== 'number') {
+    if (!id_sucursal || typeof(id_sucursal) !== 'number' || !numero_sala || typeof(numero_sala)!== 'number') {
       res.sendStatus(400);
       return;
     }
 
-    const sala = await db.query('SELECT * FROM sala WHERE id = $1', [id_sala]);
+    const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala = $2)', [id_sucursal,numero_sala]);
 
     if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
       return;
     }
-
-    // Realizar la lógica de eliminación de la sala de cine aquí
+    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [sala.rows[0].id])
+    const eliminacion = await db.query('delete from salas where id=$1',[sala.rows[0].id] )
 
     res.sendStatus(200);
   } catch (error) {
@@ -158,8 +158,32 @@ server.delete('/cinema-room/:id_sala', async (req, res) => {
   }
 });
 
+server.get('/cinema-room/getall',async (req, res)=>{
+  try{
+    const salas= await db.query('select * from salas');
+    res.status(200).json(salas.rows);
+  }
+  catch(error){
+    console.error(error);
+    res.sendStatus(500);
+  }
+    
 
+});
+server.get('/cinema-room/getbyid',async (req, res)=>{
+  try{
+    const {id_sucursal,numero_sala}= req.body;
+    const ids= await db.query('select id from salas where (id_sucursal=$1 and numero_sala=$2)',[id_sucursal,numero_sala])
+    const salas= await db.query('select * from salas where id=$1',[ids.rows[0].id]);
+    res.status(200).json(salas.rows);
+  }
+  catch(error){
+    console.error(error);
+    res.sendStatus(500);
+  }
+    
 
+});
 server.post("/api/users",async (req,res)=>{
   try{
   const { password, email, company,imagen } = req.body;
