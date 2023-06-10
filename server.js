@@ -244,20 +244,20 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   }
 });
 
-server.delete("/api/cinema/:id_cinema/branches/:id_branch", async (req,res)=>{
-  const id_sucursal = req.params.id_branch;
-  const id_empresa = req.params.id_cinema;
+server.delete("/api/cinema/branches", async (req,res)=>{
+  const {id_sucursal}=req.body;
 
   try {
     //revisar este try esta raro
-   const existesucursal= await db.query("select nombre from sucursales where id=$1", [id_sucursal])
-   if (existesucursal.rows.length===0 ){
+   const existesucursal= await db.query("select * from sucursales where id=$1", [id_sucursal])
+   // este no funca 
+   if (existesucursal.rows.length===0){
    
      res.status(400).send("There is no branch whit this id");
  
      return;
    }
-    await db.query('DELETE FROM sucursales WHERE id = $1', [id_sucursal]);
+   const eliminar= await db.query('DELETE FROM sucursales WHERE id = $1', [id_sucursal]);
 
     res.sendStatus(200);
   } catch (error) {
@@ -266,35 +266,34 @@ server.delete("/api/cinema/:id_cinema/branches/:id_branch", async (req,res)=>{
   }
 });
 
-server.put("/api/cinema/{id_cinema}/branches/{id_branch}", async (req, res) => {
+server.put("/api/cinema//branches/update", async (req, res) => {
   try {
-    const { id_branch } = req.params;
-    const { id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado } = req.body;
+   
+    const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente} = req.body;
 
     if (!id || typeof(id) !== 'number' || !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
         !provincia || typeof(provincia) !== 'string' || !localidad || typeof(localidad) !== 'string' ||
         !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
-        !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean') {
+        !precio_por_funcion || typeof(precio_por_funcion) !== 'number' || typeof(cerrado_temporalmente) !== 'boolean') {
       res.sendStatus(400);
       return;
     }
 
-    const sucursalexiste = await db.query("SELECT nombre FROM sucursal WHERE nombre=$1", [nombre]);
+    const sucursalexiste = await db.query("SELECT nombre FROM sucursales WHERE nombre=$1", [nombre]);
     if (sucursalexiste.rows.length >= 1) {
       res.status(400).send("There is already a branch with this name");
       return;
     }
-
-    const sucursal = await db.query("UPDATE sucursal SET id = $1, nombre = $2, pais = $3, provincia = $4, " +
-                                    "localidad = $5, calle = $6, altura = $7, precio = $8, cerrado = $9 " +
-                                    "WHERE id_branch = $10 RETURNING *",
-                                    [id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado, id_branch]);
-
-    if (sucursal.rows.length === 0) {
+    if (sucursalexiste.rows.length === 0) {
       res.status(404).send("Branch not found");
       return;
     }
 
+    const sucursal = await db.query("UPDATE sucursales SET  nombre = $2, pais = $3, provincia = $4, " +
+                                    "localidad = $5, calle = $6, altura = $7, precio_por_funcion = $8, cerrado_temporalmente = $9 "+
+                                    "WHERE id = $1 RETURNING *", [id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente]);
+
+   
     res.sendStatus(200);
   } catch (error) {
     console.error(error);
