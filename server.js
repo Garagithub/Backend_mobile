@@ -266,7 +266,7 @@ server.delete("/api/cinema/branches", async (req,res)=>{
   }
 });
 
-server.put("/api/cinema//branches/update", async (req, res) => {
+server.put("/api/cinema/branches/update", async (req, res) => {
   try {
    
     const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente} = req.body;
@@ -301,6 +301,34 @@ server.put("/api/cinema//branches/update", async (req, res) => {
   }
 });
 
+server.get("/api/branches", async (req, res) => {
+  try {
+    const branches = await db.query("SELECT * FROM sucursales");
+    res.json(branches.rows);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.get("/api/branches/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const branch = await db.query("SELECT id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, id_empresa FROM sucursales WHERE id = $1", [id]);
+
+    if (branch.rows.length === 0) {
+      return res.status(404).json({ message: "Branch not found" });
+    }
+
+    res.json(branch.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
+
 server.post('/api/peliculas', async (req, res) => {
   try {
     const { titulo, descripcion, genero, promedio_calificacion, en_cines, imagen } = req.body;
@@ -311,7 +339,7 @@ server.post('/api/peliculas', async (req, res) => {
     }
 
     const nuevaPelicula = await db.query(
-      'INSERT INTO pelicula (titulo, descripcion, genero, promedio_calificacion, en_cines, imagen) ' +
+      'INSERT INTO peliculas (titulo, descripcion, genero, promedio_calificacion, en_cines, imagen) ' +
       'VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [titulo, descripcion, genero, promedio_calificacion, en_cines, imagen]
     );
@@ -334,7 +362,7 @@ server.put('/api/peliculas/:id', async (req, res) => {
     }
 
     const peliculaActualizada = await db.query(
-      'UPDATE pelicula SET titulo=$1, descripcion=$2, genero=$3, promedio_calificacion=$4, en_cines=$5, imagen=$6 ' +
+      'UPDATE peliculas SET titulo=$1, descripcion=$2, genero=$3, promedio_calificacion=$4, en_cines=$5, imagen=$6 ' +
       'WHERE id=$7 RETURNING *',
       [titulo, descripcion, genero, promedio_calificacion, en_cines, imagen, id]
     );
@@ -351,11 +379,11 @@ server.put('/api/peliculas/:id', async (req, res) => {
   }
 });
 
-server.delete('/api/peliculas/:id', async (req, res) => {
+server.delete('/api/peliculas/:id/delete', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const peliculaEliminada = await db.query('DELETE FROM pelicula WHERE id=$1 RETURNING *', [id]);
+    const peliculaEliminada = await db.query('DELETE FROM peliculas WHERE id=$1 RETURNING *', [id]);
 
     if (peliculaEliminada.rows.length === 0) {
       res.sendStatus(404);
@@ -369,6 +397,34 @@ server.delete('/api/peliculas/:id', async (req, res) => {
   }
 });
 
+server.get("/api/peliculas", async (req, res) => {
+  try {
+    const peliculas = await db.query("SELECT id, titulo, descripcion, genero, promedio_calificacion, en_cines, imagen FROM peliculas");
+    res.json(peliculas.rows);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.get("/api/peliculas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pelicula = await db.query("SELECT id, titulo, descripcion, genero, promedio_calificacion, en_cines, imagen FROM peliculas WHERE id = $1", [id]);
+
+    if (pelicula.rows.length === 0) {
+      res.status(404).json({ message: "Película no encontrada" });
+      return;
+    }
+
+    res.json(pelicula.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
 server.post('/api/funciones', async (req, res) => {
   try {
     const { dia, horario, id_pelicula, id_sala } = req.body;
@@ -380,8 +436,8 @@ server.post('/api/funciones', async (req, res) => {
     }
 
     // Verificar si la película y la sala existen en la base de datos
-    const peliculaExiste = await db.query('SELECT * FROM pelicula WHERE id = $1', [id_pelicula]);
-    const salaExiste = await db.query('SELECT * FROM sala WHERE id = $1', [id_sala]);
+    const peliculaExiste = await db.query('SELECT * FROM peliculas WHERE id = $1', [id_pelicula]);
+    const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
     if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
       res.sendStatus(404);
@@ -389,7 +445,7 @@ server.post('/api/funciones', async (req, res) => {
     }
 
     const nuevaFuncion = await db.query(
-      'INSERT INTO funcion (dia, horario, id_pelicula, id_sala) ' +
+      'INSERT INTO funciones (dia, horario, id_pelicula, id_sala) ' +
       'VALUES ($1, $2, $3, $4) RETURNING *',
       [dia, horario, id_pelicula, id_sala]
     );
@@ -413,8 +469,8 @@ server.put('/api/funciones/:id', async (req, res) => {
     }
 
     // Verificar si la película y la sala existen en la base de datos
-    const peliculaExiste = await db.query('SELECT * FROM pelicula WHERE id = $1', [id_pelicula]);
-    const salaExiste = await db.query('SELECT * FROM sala WHERE id = $1', [id_sala]);
+    const peliculaExiste = await db.query('SELECT * FROM peliculas WHERE id = $1', [id_pelicula]);
+    const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
     if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
       res.sendStatus(404);
@@ -422,7 +478,7 @@ server.put('/api/funciones/:id', async (req, res) => {
     }
 
     const funcionActualizada = await db.query(
-      'UPDATE funcion SET dia=$1, horario=$2, id_pelicula=$3, id_sala=$4 ' +
+      'UPDATE funciones SET dia=$1, horario=$2, id_pelicula=$3, id_sala=$4 ' +
       'WHERE id=$5 RETURNING *',
       [dia, horario, id_pelicula, id_sala, id]
     );
@@ -451,6 +507,31 @@ server.delete('/api/funciones/:id', async (req, res) => {
     }
 
     res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.get("/api/functions", async (req, res) => {
+  try {
+    const functions = await db.query("SELECT id, dia, horario, id_pelicula, id_sala FROM funciones");
+    res.json(functions.rows);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.get("/api/functions/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const functions = await db.query("SELECT id, dia, horario, id_pelicula, id_sala FROM funciones WHERE id = $1", [id]);
+    if (functions.rows.length === 0) {
+      res.sendStatus(404);
+      return;
+    }
+    res.json(functions.rows[0]);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
