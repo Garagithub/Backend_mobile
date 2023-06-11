@@ -538,6 +538,215 @@ server.get("/api/functions/:id", async (req, res) => {
   }
 });
 
+server.post("/api/comments", async (req, res) => {
+  const { rating, comentario, id_user, id_pelicula } = req.body;
+  
+  // Verificar que los datos sean del tipo correspondiente
+  if (
+    typeof rating !== "number" ||
+    typeof comentario !== "string" ||
+    typeof id_user !== "number" ||
+    typeof id_pelicula !== "number"
+  ) {
+    res.status(400).send("Invalid data types");
+    return;
+  }
+  
+  // Verificar la longitud del comentario
+  if (comentario.length > 200) {
+    res.status(400).send("Comment exceeds the maximum length");
+    return;
+  }
+  
+  try {
+    const comment = await db.query(
+      "INSERT INTO comentarios (rating, comentario, id_user, id_pelicula) VALUES ($1, $2, $3, $4) RETURNING *",
+      [rating, comentario, id_user, id_pelicula]
+    );
+    
+    res.status(201).json(comment.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.put("/api/comments/:id", async (req, res) => {
+  const { id } = req.params;
+  const { rating, comentario, id_user, id_pelicula } = req.body;
+  
+  // Verificar que los datos sean del tipo correspondiente
+  if (
+    typeof rating !== "number" ||
+    typeof comentario !== "string" ||
+    typeof id_user !== "number" ||
+    typeof id_pelicula !== "number"
+  ) {
+    res.status(400).send("Invalid data types");
+    return;
+  }
+  
+  // Verificar la longitud del comentario
+  if (comentario.length > 200) {
+    res.status(400).send("Comment exceeds the maximum length");
+    return;
+  }
+  
+  try {
+    const updatedComment = await db.query(
+      "UPDATE comentarios SET rating = $1, comentario = $2, id_user = $3, id_pelicula = $4 WHERE id_comentario = $5 RETURNING *",
+      [rating, comentario, id_user, id_pelicula, id]
+    );
+    
+    if (updatedComment.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(updatedComment.rows[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.get("/api/comments", async (req, res) => {
+  try {
+    const comments = await db.query("SELECT * FROM comentarios");
+    res.json(comments.rows);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.get("/api/comments/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const comment = await db.query("SELECT * FROM comentarios WHERE id_comentario = $1", [id]);
+    
+    if (comment.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(comment.rows[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+server.delete("/api/comments/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const deletedComment = await db.query("DELETE FROM comentarios WHERE id_comentario = $1 RETURNING *", [id]);
+    
+    if (deletedComment.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+// Crear una reserva
+server.post("/api/reservas", async (req, res) => {
+  try {
+    const { id_funcion, id_user, cantidad_entradas } = req.body;
+    
+    if (!id_funcion || typeof(id_funcion) !== 'number' ||
+        !id_user || typeof(id_user) !== 'number' ||
+        !cantidad_entradas || typeof(cantidad_entradas) !== 'number') {
+      res.sendStatus(400);
+      return;
+    }
+    
+    const crear_reserva= await db.query("insert into reservas (id_funcion, id_user, cantidad_entradas) values ($1,$2,$3) returning *",[id_funcion,id_user,cantidad_entradas])
+    
+    res.status(201).json(crear_reserva.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+// Actualizar una reserva por ID
+
+
+// Eliminar una reserva por ID
+server.delete("/api/reservas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id || typeof(id) !== 'number') {
+      res.sendStatus(400);
+      return;
+    }
+    
+    const deletedreserva = await db.query("DELETE FROM reservas WHERE id = $1 RETURNING *", [id]);
+    
+    if (deletedreserva.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
+    
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+// Obtener todas las reservas
+server.get("/api/reservas", async (req, res) => {
+  try {
+    
+    const reservas_get = await db.query("SELECT * FROM reservas ");
+    
+    if (reservas_get.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(reservas_get.rows[0]);
+    }
+    
+    res.json(reservas_get);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+// Obtener una reserva por ID
+server.get("/api/reservas/:id", async (req, res) => {
+  try {
+    const { id_funcion } = req.params;
+    
+    if (!id_funcion || typeof(id_funcion) !== 'number') {
+      res.sendStatus(400);
+      return;
+    }
+    
+
+    const reservas_get = await db.query("SELECT * FROM reservas WHERE id_funcion = $1", [id_funcion]);
+    
+    if (reservas_get.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(reservas_get.rows[0]);
+    }
+    
+    res.json(reservas_get);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 
 server.listen(port,()=> console.log('El servidor está escuchando en localhost: '+ port));
 
