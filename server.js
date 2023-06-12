@@ -42,7 +42,7 @@ server.post("/api/auths", async (req,res)=>{
   try {
     const { email, password } = req.body;
 
-    const user = await pool.query(`
+    const user = await db.query(`
         SELECT *
         FROM socios
         WHERE email = $1;
