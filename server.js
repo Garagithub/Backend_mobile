@@ -61,8 +61,17 @@ server.post("/api/auths", async (req,res)=>{
 
     } 
 
-    const token= jwt.sign(payload,"password123",{expiresIn:"48hr"},)
-    res.json({token:token});
+    const payload = {
+      user: {
+        id: user.rows[0].id
+      }}
+
+    const token= jwt.sign (payload,"password123",{expiresIn:"48hr"},)
+  
+    res.status(200).json({token:token})
+  
+
+  
 
 } catch(error) {
     res.status(500).send();
@@ -71,6 +80,39 @@ server.post("/api/auths", async (req,res)=>{
 }
 
 });
+
+
+server.post("/api/users",async (req,res)=>{
+  try{
+  const { password, email, company,imagen } = req.body;
+  
+  if (!imagen || typeof(imagen)!= 'string' || !password || typeof(password)!='string' ||!email ||typeof(email)!='string' ||!email.includes("@") || !company || typeof(company)!= 'string' ){
+    res.sendStatus(400);
+    return;
+  }
+  const userexiste= await db.query("select email from socios where email=$1", [email])
+  if (userexiste.rows.length>=1 ){
+  
+    res.status(400).send("There is already an email asociate to this account");
+
+    return;
+  }
+  const salt=await bcrypt.genSalt(10)
+  const hashed_password=await bcrypt.hash(password,salt)
+  const register_empresa=await db.query("insert into empresas (nombre,imagen) values ($1,$2) returning *",[company,imagen])
+  const register_socio=await db.query("insert into socios (email,password, id_empresa) values($1,$2,$3) returning *",[email,hashed_password,register_empresa.rows[0].id])
+  const payload = {
+    user: {
+      id: register_socio.rows[0].id
+    }}
+  const token= jwt.sign (payload,"password123",{expiresIn:"48hr"},)
+
+  res.status(201).json({token:token})
+}
+catch(er){res.sendStatus(500)
+console.log(er)}
+
+})
 
 
 server.post('/cinema-room', async (req, res) => {
@@ -185,37 +227,7 @@ server.get('/cinema-room/getbyid',async (req, res)=>{
     
 
 });
-server.post("/api/users",async (req,res)=>{
-  try{
-  const { password, email, company,imagen } = req.body;
-  
-  if (!imagen || typeof(imagen)!= 'string' || !password || typeof(password)!='string' ||!email ||typeof(email)!='string' ||!email.includes("@") || !company || typeof(company)!= 'string' ){
-    res.sendStatus(400);
-    return;
-  }
-  const userexiste= await db.query("select email from socios where email=$1", [email])
-  if (userexiste.rows.length>=1 ){
-  
-    res.status(400).send("There is already an email asociate to this account");
 
-    return;
-  }
-  const salt=await bcrypt.genSalt(10)
-  const hashed_password=await bcrypt.hash(password,salt)
-  const register_empresa=await db.query("insert into empresas (nombre,imagen) values ($1,$2) returning *",[company,imagen])
-  const register_socio=await db.query("insert into socios (email,password, id_empresa) values($1,$2,$3) returning *",[email,hashed_password,register_empresa.rows[0].id])
-  const payload = {
-    user: {
-      id: register_socio.rows[0].id
-    }}
-  const token= jwt.sign (payload,"password123",{expiresIn:"48hr"},)
-
-  res.status(201).json({token:token})
-}
-catch(er){res.sendStatus(500)
-console.log(er)}
-
-})
 
 server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   try {
