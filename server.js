@@ -17,14 +17,11 @@ const db = new pg.Pool({
 
 })
 
-server.get('/db', async (req, res)=>{
-  //  const datos = await db.query('select * from table')
 
-
-})
 
 server.get('/', (req, res)=>{
-    res.send('hola desde el servidor')
+    res.status(200).send('El servidor está disponible')
+
 
 })
 
