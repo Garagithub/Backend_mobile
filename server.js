@@ -4,7 +4,7 @@ const bcrypt= require("bcrypt");
 const server = express();
 const jwt= require("jsonwebtoken");
 const res = require("express/lib/response");
-const port = process.env.PORT | 4000
+const port = process.env.PORT || 4000 
 
 server.use(express.json());
 
