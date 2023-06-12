@@ -53,6 +53,9 @@ server.post("/api/auths", async (req,res)=>{
 
     } 
 
+    console.log(password)
+    console.log(user.rows[0].pass)
+
     const validPassword = await bcrypt.compare(password, user.rows[0].pass);
     if (!validPassword){
         return res.status(401).json('Password or email is incorrect');
