@@ -81,54 +81,6 @@ server.post("/api/auths", async (req,res)=>{
 
 });
 
-server.put('/api/socios/update',async(req,res)=>{
-  try{
-  const {id,email,id_empresa}=req.body;
-  if (!id || typeof(id) != 'number'||!email || typeof(email) != 'string' || !id_empresa|| typeof(id_empresa) != 'number' ) {
-
-    res.sendStatus(400);
-    return;
-
-   }
-    
-
-    const usuarioupdate = await db.query("UPDATE socios SET  email = $2, id_empresa = $3 "+
-                                    "WHERE id = $1 RETURNING *", [id, email,id_empresa]);
-
-   
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
-  
-server.delete('/api/socios/delete',async(req,res)=>{
-  try{
-    const { id } = req.body;
-
-    if (!id || typeof(id) !== 'number') {
-      res.sendStatus(400);
-      return;
-    }
-   
-
-    //const usuario = await db.query('SELECT id FROM usuarios WHERE (id = $1 )', [id]);
-
-    
-    
-    const socios_delete=await db.query('delete from socios where id=$1',[id]);
-    //const reserva_delete=await db.query('delete from reservas where id_user=$1',[id]);
-    //const eliminar_usuario = await db.query('DELETE FROM usuarios WHERE id = $1 ', [id]);
-    
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-})
-
 
 server.post("/api/users",async (req,res)=>{
   try{
@@ -162,53 +114,6 @@ console.log(er)}
 
 })
 
-server.put('/api/users/update',async(req,res)=>{
-  try{
-  const {id,nombre,apellido,imagen}=req.body;
-  if (!id || typeof(id) != 'number'||!nombre || typeof(nombre) != 'string' || !apellido|| typeof(apellido) != 'string' || !imagen || typeof(imagen)!=='string' ) {
-
-    res.sendStatus(400);
-    return;
-
-   }
-    
-
-    const usuarioupdate = await db.query("UPDATE usuarios SET  nombre = $2, apellido = $3, imagen = $4 " +
-                                    "WHERE id = $1 RETURNING *", [id, nombre, apellido,imagen]);
-
-   
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
-  
-server.delete('/api/users/delete',async(req,res)=>{
-  try{
-    const { id } = req.body;
-
-    if (!id || typeof(id) !== 'number') {
-      res.sendStatus(400);
-      return;
-    }
-   
-
-    //const usuario = await db.query('SELECT id FROM usuarios WHERE (id = $1 )', [id]);
-
-    
-    
-    const coments_delete=await db.query('delete from comentarios where id_user=$1',[id]);
-    const reserva_delete=await db.query('delete from reservas where id_user=$1',[id]);
-    const eliminar_usuario = await db.query('DELETE FROM usuarios WHERE id = $1 ', [id]);
-    
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-})
 
 server.post('/cinema-room', async (req, res) => {
 
