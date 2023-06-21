@@ -102,6 +102,7 @@ server.put('/api/socios/update',async(req,res)=>{
     res.sendStatus(500);
   }
 });
+//hola 
   
 server.delete('/api/socios/delete',async(req,res)=>{
   try{
