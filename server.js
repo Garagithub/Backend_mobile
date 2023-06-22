@@ -355,6 +355,24 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   }
 });
 
+
+server.get("/api/cinema/:idSocio/branches", async (req, res) => {
+  try {
+  
+  const {idSocio} = req.params;
+  
+  
+  const empresa = await db.query("SELECT * FROM socios WHERE id = $1", [idSocio]);
+  const sucursal = await db.query("SELECT * FROM sucursales WHERE id_empresa = $1", [empresa.rows[0].id_empresa]);
+
+    res.json({sucursal: sucursal.rows});
+  }
+  catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 server.delete("/api/cinema/branches", async (req,res)=>{
   const {id_sucursal}=req.body;
 
