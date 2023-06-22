@@ -652,6 +652,23 @@ server.get("/api/functions", async (req, res) => {
   }
 });
 
+
+
+server.get("/api/functions/:idSala", async (req, res) => {
+  try {
+    const { idSala } = req.params;
+
+    const sala = await db.query("SELECT * FROM salas WHERE id = $1", [idSala]);
+    const funciones = await db.query("SELECT * FROM funciones WHERE id_sala = $1", [idSala]);
+
+    res.json({ sala: sala.rows, funciones: funciones.rows });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
 server.get("/api/functions/:id", async (req, res) => {
   const { id } = req.params;
   try {
