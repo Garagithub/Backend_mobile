@@ -158,8 +158,10 @@ server.post("/api/users",async (req,res)=>{
 
   res.status(201).json({token:token})
 }
-catch(er){res.sendStatus(500)
-console.log(er)}
+catch (er) {
+  console.log(er);
+  res.status(500).json({ error: "Error en el registro", message: er.message });
+}
 
 })
 
