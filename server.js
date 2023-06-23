@@ -131,6 +131,24 @@ server.delete('/api/socios/delete',async(req,res)=>{
 })
 
 
+server.get("/api/socios/:idSocio", async (req, res) => {
+  try {
+  
+  const {idSocio} = req.params;
+  
+  
+  const socio = await db.query("SELECT * FROM socios WHERE id = $1", [idSocio]);
+  
+
+    res.json({socio: socio.rows});
+  }
+  catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
 server.post("/api/users",async (req,res)=>{
   try{
   const { password, email, company } = req.body;
