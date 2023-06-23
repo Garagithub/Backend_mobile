@@ -377,9 +377,9 @@ server.get('/cinema-room/getbyid',async (req, res)=>{
 
 server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   try {
-  const { id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado } = req.body;
+  const { nombre, pais, provincia, localidad, calle, altura, precio, cerrado, imagen } = req.body;
   
-  if (!id || typeof(id) !== 'number' || !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
+  if ( !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
       !provincia || typeof(provincia) !== 'string' || !localidad || typeof(localidad) !== 'string' ||
       !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
       !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean'||!cerrado) {
@@ -394,7 +394,7 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
     return;
   }
   
-  const sucursal = await db.query("INSERT INTO sucursales (id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",[id, nombre, pais, provincia, localidad, calle, altura, precio, cerrado]);
+  const sucursal = await db.query("INSERT INTO sucursales ( nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, imagen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",[ nombre, pais, provincia, localidad, calle, altura, precio, cerrado, imagen]);
     res.sendStatus(200);
   }
   catch (error) {
