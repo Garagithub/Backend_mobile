@@ -129,37 +129,13 @@ server.delete('/api/socios/delete',async(req,res)=>{
     res.sendStatus(500);
   }
 })
-server.get('/socios/getall',async (req, res)=>{
-  try{
-    const socios= await db.query('select * from socios');
-    res.status(200).json(socios.rows);
-  }
-  catch(error){
-    console.error(error);
-    res.sendStatus(500);
-  }
-    
 
-});
-server.get('/socios/getbyid',async (req, res)=>{
-  try{
-    const {id_socio}= req.body;
-    const socios= await db.query('select * from socios where id=$1',[id_socio]);
-    res.status(200).json(socios.rows);
-  }
-  catch(error){
-    console.error(error);
-    res.sendStatus(500);
-  }
-    
-
-});
 
 server.post("/api/users",async (req,res)=>{
   try{
-  const { password, email, company,imagen } = req.body;
+  const { password, email, company } = req.body;
   
-  if (!imagen || typeof(imagen)!= 'string' || !password || typeof(password)!='string' ||!email ||typeof(email)!='string' ||!email.includes("@") || !company || typeof(company)!= 'string' ){
+  if (!password || typeof(password)!='string' ||!email ||typeof(email)!='string' ||!email.includes("@") || !company || typeof(company)!= 'string' ){
     res.sendStatus(400);
     return;
   }
@@ -172,7 +148,7 @@ server.post("/api/users",async (req,res)=>{
   }
   const salt=await bcrypt.genSalt(10)
   const hashed_password=await bcrypt.hash(password,salt)
-  const register_empresa=await db.query("insert into empresas (nombre,imagen) values ($1,$2) returning *",[company,imagen])
+  const register_empresa=await db.query("insert into empresas (nombre) values ($1) returning *",[company])
   const register_socio=await db.query("insert into socios (email,password, id_empresa) values($1,$2,$3) returning *",[email,hashed_password,register_empresa.rows[0].id])
   const payload = {
     user: {
@@ -182,8 +158,10 @@ server.post("/api/users",async (req,res)=>{
 
   res.status(201).json({token:token})
 }
-catch(er){res.sendStatus(500)
-console.log(er)}
+catch (er) {
+  console.log(er);
+  res.status(500).json({ error: "Error en el registro", message: er.message });
+}
 
 })
 
@@ -234,32 +212,6 @@ server.delete('/api/users/delete',async(req,res)=>{
     res.sendStatus(500);
   }
 })
-
-server.get('/users/getall',async (req, res)=>{
-  try{
-    const usuarios= await db.query('select * from usuarios');
-    res.status(200).json(usuarios.rows);
-  }
-  catch(error){
-    console.error(error);
-    res.sendStatus(500);
-  }
-    
-
-});
-server.get('/users/getbyid',async (req, res)=>{
-  try{
-    const {id_usuario}= req.body;
-    const usuarios= await db.query('select * from usuarios where id=$1',[id_usuario]);
-    res.status(200).json(usuarios.rows);
-  }
-  catch(error){
-    console.error(error);
-    res.sendStatus(500);
-  }
-    
-
-});
 
 server.post('/cinema-room', async (req, res) => {
 
@@ -396,6 +348,24 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   
   const sucursal = await db.query("INSERT INTO sucursales ( nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, imagen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",[ nombre, pais, provincia, localidad, calle, altura, precio, cerrado, imagen]);
     res.sendStatus(200);
+  }
+  catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
+server.get("/api/cinema/:idSocio/branches", async (req, res) => {
+  try {
+  
+  const {idSocio} = req.params;
+  
+  
+  const empresa = await db.query("SELECT * FROM socios WHERE id = $1", [idSocio]);
+  const sucursal = await db.query("SELECT * FROM sucursales WHERE id_empresa = $1", [empresa.rows[0].id_empresa]);
+
+    res.json({sucursal: sucursal.rows});
   }
   catch (error) {
     console.error(error);
@@ -681,6 +651,23 @@ server.get("/api/functions", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+
+
+server.get("/api/functions/:idSala", async (req, res) => {
+  try {
+    const { idSala } = req.params;
+
+    const sala = await db.query("SELECT * FROM salas WHERE id = $1", [idSala]);
+    const funciones = await db.query("SELECT * FROM funciones WHERE id_sala = $1", [idSala]);
+
+    res.json({ sala: sala.rows, funciones: funciones.rows });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 
 server.get("/api/functions/:id", async (req, res) => {
   const { id } = req.params;
