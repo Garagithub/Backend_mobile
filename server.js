@@ -133,20 +133,24 @@ server.delete('/api/socios/delete',async(req,res)=>{
 
 server.get("/api/socios/:idSocio", async (req, res) => {
   try {
-  
-  const {idSocio} = req.params;
-  
-  
-  const socio = await db.query("SELECT * FROM socios WHERE id = $1", [idSocio]);
-  
+    const { idSocio } = req.params;
 
-    res.json({socio: socio.rows});
-  }
-  catch (error) {
+    const query = `
+      SELECT s.*, e.nombre AS nombre_empresa
+      FROM socios s
+      INNER JOIN empresas e ON s.id_empresa = e.id
+      WHERE s.id = $1
+    `;
+  
+    const socio = await db.query(query, [idSocio]);
+  
+    res.json({ socio: socio.rows });
+  } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 
 server.post("/api/users",async (req,res)=>{
@@ -676,15 +680,24 @@ server.get("/api/functions/:idSala", async (req, res) => {
   try {
     const { idSala } = req.params;
 
-    const sala = await db.query("SELECT * FROM salas WHERE id = $1", [idSala]);
-    const funciones = await db.query("SELECT * FROM funciones WHERE id_sala = $1", [idSala]);
+    const query = `
+      SELECT s.numero_sala AS numero_sala, p.titulo AS nombre_pelicula, f.dia, f.horario
+      FROM salas s
+      JOIN funciones f ON f.id_sala = s.id
+      JOIN peliculas p ON p.id = f.id_pelicula
+      WHERE s.id = $1
+    `;
 
-    res.json({ sala: sala.rows, funciones: funciones.rows });
+    const result = await db.query(query, [idSala]);
+    const funciones = result.rows;
+
+    res.json({ funciones });
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 
 server.get("/api/functions/:id", async (req, res) => {
