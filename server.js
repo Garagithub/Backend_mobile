@@ -235,9 +235,9 @@ server.delete('/api/users/delete',async(req,res)=>{
   }
 })
 
-server.post('/cinema-room', async (req, res) => {
-
-const { id_sucursal, fila, columna, numero_sala}= req.body;
+server.post('/cinema-room/:id_sucursal', async (req, res) => {
+const {id_sucursal}= req.params;
+const { fila, columna, numero_sala}= req.body;
    if (!id_sucursal || typeof(id_sucursal) != 'number'||!fila || typeof(fila) != 'number' || !columna || typeof(columna) != 'number' || !numero_sala || typeof(numero_sala)!=='number' ) {
 
     res.sendStatus(400);
@@ -262,9 +262,10 @@ const { id_sucursal, fila, columna, numero_sala}= req.body;
 
 })
 
-server.put('/cinema-room/update', async (req, res) => {
+server.put('/:idsucursal/cinema-room/update', async (req, res) => {
   try {
-    const {id_sucursal, fila, columna, numero_sala } = req.body;
+    const {id_sucursal}= req.params;
+    const { fila, columna, numero_sala } = req.body;
 
     if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
@@ -296,9 +297,9 @@ server.put('/cinema-room/update', async (req, res) => {
   }
 });
 
-server.delete('/cinema-room/delete', async (req, res) => {
+server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => {
   try {
-    const { id_sucursal,numero_sala } = req.body;
+    const { id_sucursal,numero_sala } = req.params;
 
     if (!id_sucursal || typeof(id_sucursal) !== 'number' || !numero_sala || typeof(numero_sala)!== 'number') {
       res.sendStatus(400);
