@@ -262,7 +262,7 @@ const { fila, columna, numero_sala}= req.body;
 
 })
 
-server.put('/cinema-room/update', async (req, res) => {
+server.put('/:idsucursal/cinema-room/update', async (req, res) => {
   try {
     const {id_sucursal}= req.params;
     const { fila, columna, numero_sala } = req.body;
