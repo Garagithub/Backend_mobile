@@ -358,12 +358,14 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
       !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
       !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean'||!cerrado) {
     res.sendStatus(400);
+    console.log("fallo la validacion principal")
     return;
   }
   const sucursalexiste= await db.query("select nombre from sucursales where nombre=$1", [nombre])
   if (sucursalexiste.rows.length>=1 ){
   
     res.status(400).send("There is already a branch with this name");
+    console.log("There is already a branch with this name");
 
     return;
   }
