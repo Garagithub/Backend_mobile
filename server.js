@@ -131,6 +131,28 @@ server.delete('/api/socios/delete',async(req,res)=>{
 })
 
 
+server.get("/api/socios/:idSocio", async (req, res) => {
+  try {
+    const { idSocio } = req.params;
+
+    const query = `
+      SELECT s.*, e.nombre AS nombre_empresa
+      FROM socios s
+      INNER JOIN empresas e ON s.id_empresa = e.id
+      WHERE s.id = $1
+    `;
+  
+    const socio = await db.query(query, [idSocio]);
+  
+    res.json({ socio: socio.rows });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
+
 server.post("/api/users",async (req,res)=>{
   try{
   const { password, email, company } = req.body;
@@ -440,10 +462,36 @@ server.get("/api/branches", async (req, res) => {
   }
 });
 
-server.get("/api/branches/:id", async (req, res) => {
+// server.get("/api/branches/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const branch = await db.query("SELECT id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, id_empresa FROM sucursales WHERE id = $1", [id]);
+
+//     if (branch.rows.length === 0) {
+//       return res.status(404).json({ message: "Branch not found" });
+//     }
+
+//     res.json(branch.rows[0]);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+
+server.get("/api/branches/:id/:id_socio", async (req, res) => {
   try {
-    const { id } = req.params;
-    const branch = await db.query("SELECT id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, id_empresa FROM sucursales WHERE id = $1", [id]);
+    const { id, id_socio } = req.params;
+
+    const query = `
+      SELECT s.id, s.nombre, s.pais, s.provincia, s.localidad, s.calle, s.altura, s.precio_por_funcion, s.cerrado_temporalmente, s.id_empresa
+      FROM sucursales s
+      INNER JOIN empresas e ON s.id_empresa = e.id
+      INNER JOIN socios so ON e.id = so.id_empresa
+      WHERE s.id = $1 AND so.id = $2
+    `;
+
+    const branch = await db.query(query, [id, id_socio]);
 
     if (branch.rows.length === 0) {
       return res.status(404).json({ message: "Branch not found" });
@@ -455,6 +503,7 @@ server.get("/api/branches/:id", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 
 
 
@@ -658,15 +707,24 @@ server.get("/api/functions/:idSala", async (req, res) => {
   try {
     const { idSala } = req.params;
 
-    const sala = await db.query("SELECT * FROM salas WHERE id = $1", [idSala]);
-    const funciones = await db.query("SELECT * FROM funciones WHERE id_sala = $1", [idSala]);
+    const query = `
+      SELECT s.numero_sala AS numero_sala, p.titulo AS nombre_pelicula, f.dia, f.horario
+      FROM salas s
+      JOIN funciones f ON f.id_sala = s.id
+      JOIN peliculas p ON p.id = f.id_pelicula
+      WHERE s.id = $1
+    `;
 
-    res.json({ sala: sala.rows, funciones: funciones.rows });
+    const result = await db.query(query, [idSala]);
+    const funciones = result.rows;
+
+    res.json({ funciones });
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 
 server.get("/api/functions/:id", async (req, res) => {
