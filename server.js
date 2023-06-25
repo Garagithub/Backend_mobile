@@ -351,6 +351,9 @@ server.get('/cinema-room/getbyid',async (req, res)=>{
 
 
 server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
+
+  const {id_empresa} = req.params
+  
   try {
   const { nombre, pais, provincia, localidad, calle, altura, precio, cerrado, imagen } = req.body;
   
@@ -359,20 +362,19 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
       !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
       !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean'||cerrado === undefined) {
     res.sendStatus(400);
-    console.log(typeof(nombre), typeof(pais), typeof provincia, typeof localidad, typeof calle, typeof altura, typeof precio, typeof cerrado, typeof imagen);
-    console.log("fallo la validacion principal")
+  
     return;
   }
   const sucursalexiste= await db.query("select nombre from sucursales where nombre=$1", [nombre])
   if (sucursalexiste.rows.length>=1 ){
   
     res.status(400).send("There is already a branch with this name");
-    console.log("There is already a branch with this name");
+   
 
     return;
   }
   
-  const sucursal = await db.query("INSERT INTO sucursales ( nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, imagen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",[ nombre, pais, provincia, localidad, calle, altura, precio, cerrado, imagen]);
+  const sucursal = await db.query("INSERT INTO sucursales ( nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, id_empresa,  imagen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",[ nombre, pais, provincia, localidad, calle, altura, precio, cerrado, id_empresa, imagen]);
     res.sendStatus(200);
   }
   catch (error) {
