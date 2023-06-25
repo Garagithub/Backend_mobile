@@ -357,7 +357,7 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
   if ( !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
       !provincia || typeof(provincia) !== 'string' || !localidad || typeof(localidad) !== 'string' ||
       !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
-      !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean'||!cerrado) {
+      !precio || typeof(precio) !== 'number' || typeof(cerrado) !== 'boolean'||cerrado === undefined) {
     res.sendStatus(400);
     console.log("fallo la validacion principal")
     return;
