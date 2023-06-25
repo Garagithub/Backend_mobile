@@ -297,9 +297,9 @@ server.put('/:idsucursal/cinema-room/update', async (req, res) => {
   }
 });
 
-server.delete('/cinema-room/delete', async (req, res) => {
+server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => {
   try {
-    const { id_sucursal,numero_sala } = req.body;
+    const { id_sucursal,numero_sala } = req.params;
 
     if (!id_sucursal || typeof(id_sucursal) !== 'number' || !numero_sala || typeof(numero_sala)!== 'number') {
       res.sendStatus(400);
