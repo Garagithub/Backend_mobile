@@ -235,9 +235,9 @@ server.delete('/api/users/delete',async(req,res)=>{
   }
 })
 
-server.post('/cinema-room', async (req, res) => {
-
-const { id_sucursal, fila, columna, numero_sala}= req.body;
+server.post('/cinema-room/:id_sucursal', async (req, res) => {
+const {id_sucursal}= req.params;
+const { fila, columna, numero_sala}= req.body;
    if (!id_sucursal || typeof(id_sucursal) != 'number'||!fila || typeof(fila) != 'number' || !columna || typeof(columna) != 'number' || !numero_sala || typeof(numero_sala)!=='number' ) {
 
     res.sendStatus(400);
