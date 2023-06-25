@@ -374,7 +374,7 @@ server.post("/api/cinema/:id_cinema/branches", async (req, res) => {
     return;
   }
   
-  const sucursal = await db.query("INSERT INTO sucursales ( nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, id_cinema,  imagen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",[ nombre, pais, provincia, localidad, calle, altura, precio, cerrado, id_cinema, imagen]);
+  const sucursal = await db.query("INSERT INTO sucursales ( nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente, id_empresa,  imagen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",[ nombre, pais, provincia, localidad, calle, altura, precio, cerrado, id_cinema, imagen]);
     res.sendStatus(200);
   }
   catch (error) {
