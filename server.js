@@ -264,7 +264,8 @@ const { fila, columna, numero_sala}= req.body;
 
 server.put('/cinema-room/update', async (req, res) => {
   try {
-    const {id_sucursal, fila, columna, numero_sala } = req.body;
+    const {id_sucursal}= req.params;
+    const { fila, columna, numero_sala } = req.body;
 
     if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
