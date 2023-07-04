@@ -322,9 +322,10 @@ server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => 
   }
 });
 
-server.get('/cinema-room/getall',async (req, res)=>{
+server.get('/:id_sucursal/cinema-room/getall',async (req, res)=>{
   try{
-    const salas= await db.query('select * from salas');
+    const {id_sucursal}=req.params
+    const salas= await db.query('select * from salas where id_sucursal=$1',[id_sucursal]);
     res.status(200).json(salas.rows);
   }
   catch(error){
@@ -334,9 +335,10 @@ server.get('/cinema-room/getall',async (req, res)=>{
     
 
 });
-server.get('/cinema-room/getbyid',async (req, res)=>{
+server.get('/:id_sucursal/cinema-room/getbyid',async (req, res)=>{
   try{
-    const {id_sucursal,numero_sala}= req.body;
+    const {id_sucursal}= req.params;
+    const {numero_sala}= req.body;
     const ids= await db.query('select id from salas where (id_sucursal=$1 and numero_sala=$2)',[id_sucursal,numero_sala])
     const salas= await db.query('select * from salas where id=$1',[ids.rows[0].id]);
     res.status(200).json(salas.rows);
