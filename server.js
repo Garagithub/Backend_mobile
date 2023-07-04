@@ -427,40 +427,76 @@ server.delete("/api/cinema/branches", async (req,res)=>{
   }
 });
 
+// server.put("/api/cinema/branches/update", async (req, res) => {
+//   try {
+   
+//     const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente} = req.body;
+
+//     if (!id || typeof(id) !== 'number' || !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
+//         !provincia || typeof(provincia) !== 'string' || !localidad || typeof(localidad) !== 'string' ||
+//         !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
+//         !precio_por_funcion || typeof(precio_por_funcion) !== 'number' || typeof(cerrado_temporalmente) !== 'boolean') {
+//       res.sendStatus(400);
+//       return;
+//     }
+
+//     const sucursalexiste = await db.query("SELECT nombre FROM sucursales WHERE nombre=$1", [nombre]);
+//     if (sucursalexiste.rows.length >= 1) {
+//       res.status(400).send("There is already a branch with this name");
+//       return;
+//     }
+//     if (sucursalexiste.rows.length === 0) {
+//       res.status(404).send("Branch not found");
+//       return;
+//     }
+
+//     const sucursal = await db.query("UPDATE sucursales SET  nombre = $2, pais = $3, provincia = $4, " +
+//                                     "localidad = $5, calle = $6, altura = $7, precio_por_funcion = $8, cerrado_temporalmente = $9 "+
+//                                     "WHERE id = $1 RETURNING *", [id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente]);
+
+   
+//     res.sendStatus(200);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+
 server.put("/api/cinema/branches/update", async (req, res) => {
   try {
-   
-    const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente} = req.body;
+    const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente } = req.body;
 
-    if (!id || typeof(id) !== 'number' || !nombre || typeof(nombre) !== 'string' || !pais || typeof(pais) !== 'string' ||
-        !provincia || typeof(provincia) !== 'string' || !localidad || typeof(localidad) !== 'string' ||
-        !calle || typeof(calle) !== 'string' || !altura || typeof(altura) !== 'number' ||
-        !precio_por_funcion || typeof(precio_por_funcion) !== 'number' || typeof(cerrado_temporalmente) !== 'boolean') {
+    if (!id || typeof id !== "number" || !nombre || typeof nombre !== "string" || !pais || typeof pais !== "string" ||
+        !provincia || typeof provincia !== "string" || !localidad || typeof localidad !== "string" ||
+        !calle || typeof calle !== "string" || !altura || typeof altura !== "number" ||
+        !precio_por_funcion || typeof precio_por_funcion !== "number" || typeof cerrado_temporalmente !== "boolean") {
       res.sendStatus(400);
       return;
     }
 
-    const sucursalexiste = await db.query("SELECT nombre FROM sucursales WHERE nombre=$1", [nombre]);
+    const sucursalexiste = await db.query("SELECT nombre FROM sucursales WHERE id <> $1 AND nombre = $2", [id, nombre]);
     if (sucursalexiste.rows.length >= 1) {
       res.status(400).send("There is already a branch with this name");
       return;
     }
+
     if (sucursalexiste.rows.length === 0) {
       res.status(404).send("Branch not found");
       return;
     }
 
-    const sucursal = await db.query("UPDATE sucursales SET  nombre = $2, pais = $3, provincia = $4, " +
-                                    "localidad = $5, calle = $6, altura = $7, precio_por_funcion = $8, cerrado_temporalmente = $9 "+
-                                    "WHERE id = $1 RETURNING *", [id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente]);
+    const sucursal = await db.query("UPDATE sucursales SET nombre = $2, pais = $3, provincia = $4, " +
+      "localidad = $5, calle = $6, altura = $7, precio_por_funcion = $8, cerrado_temporalmente = $9 " +
+      "WHERE id = $1 RETURNING *", [id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente]);
 
-   
     res.sendStatus(200);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 server.get("/api/branches", async (req, res) => {
   try {
