@@ -9,9 +9,9 @@ const port = process.env.PORT || 4000
 server.use(express.json());
 
 const db = new pg.Pool({
-    host: "containers-us-west-23.railway.app",
-    port: 6437,
-    password: "pOTCjGkYnK0ixuX7Lc77",
+    host: "containers-us-west-72.railway.app",
+    port: 7035,
+    password: "MegAemOb9TngNH7s6PDb",
     database: "railway",
     user: "postgres"
 
