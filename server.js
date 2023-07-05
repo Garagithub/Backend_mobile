@@ -233,7 +233,9 @@ server.delete('/api/users/delete',async(req,res)=>{
     console.error(error);
     res.sendStatus(500);
   }
-})
+}) 
+
+//a
 
 server.post('/cinema-room/:id_sucursal', async (req, res) => {
   const { id_sucursal } = req.params;
