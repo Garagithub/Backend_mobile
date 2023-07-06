@@ -531,7 +531,8 @@ server.put("/api/cinema/branches/update", async (req, res) => {
       return;
     }
 
-    if (sucursalexiste.rows.length === 0) {
+    const sucursalfound = await db.query("SELECT nombre FROM sucursales WHERE id = $1", [id]);
+    if (sucursalfound.rows.length === 0) {
       console.log('Sucursal no encontrada');
       res.status(404).send("Branch not found");
       return;
@@ -549,6 +550,7 @@ server.put("/api/cinema/branches/update", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 
 
 
