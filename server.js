@@ -266,10 +266,10 @@ server.post('/cinema-room/:id_sucursal', async (req, res) => {
 
 })
 
-server.put('/:idsucursal/cinema-room/update', async (req, res) => {
+server.put('/:idsucursal/:cinema-room/update', async (req, res) => {
   try {
-    const {id_sucursal}= req.params;
-    const { fila, columna, numero_sala } = req.body;
+    const {id_sucursal, numero_sala}= req.params;
+    const { fila, columna } = req.body;
 
     if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
