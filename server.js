@@ -239,7 +239,6 @@ server.delete('/api/users/delete',async(req,res)=>{
 
 server.post('/cinema-room/:id_sucursal', async (req, res) => {
   const { id_sucursal } = req.params;
-  id_sucursal = parseInt(id_sucursal); // Convertir a número enter
   const { fila, columna, numero_sala } = req.body;
 
   if (typeof id_sucursal !== 'number' || !fila || typeof fila !== 'number' || !columna || typeof columna !== 'number' || !numero_sala || typeof numero_sala !== 'number') {
