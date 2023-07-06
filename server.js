@@ -466,25 +466,73 @@ server.delete("/api/cinema/branches", async (req,res)=>{
 // });
 
 
+// server.put("/api/cinema/branches/update", async (req, res) => {
+//   try {
+//     const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente } = req.body;
+
+//     if (!id || typeof id !== "number" || !nombre || typeof nombre !== "string" || !pais || typeof pais !== "string" ||
+//         !provincia || typeof provincia !== "string" || !localidad || typeof localidad !== "string" ||
+//         !calle || typeof calle !== "string" || !altura || typeof altura !== "number" ||
+//         !precio_por_funcion || typeof precio_por_funcion !== "number" || typeof cerrado_temporalmente !== "boolean") {
+//       res.sendStatus(400);
+//       return;
+//     }
+
+//     const sucursalexiste = await db.query("SELECT nombre FROM sucursales WHERE id <> $1 AND nombre = $2", [id, nombre]);
+//     if (sucursalexiste.rows.length >= 1) {
+//       res.status(400).send("There is already a branch with this name");
+//       return;
+//     }
+
+//     if (sucursalexiste.rows.length === 0) {
+//       res.status(404).send("Branch not found");
+//       return;
+//     }
+
+//     const sucursal = await db.query("UPDATE sucursales SET nombre = $2, pais = $3, provincia = $4, " +
+//       "localidad = $5, calle = $6, altura = $7, precio_por_funcion = $8, cerrado_temporalmente = $9 " +
+//       "WHERE id = $1 RETURNING *", [id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente]);
+
+//     res.sendStatus(200);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+
 server.put("/api/cinema/branches/update", async (req, res) => {
   try {
     const { id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente } = req.body;
+
+    console.log('ID:', id);
+    console.log('Nombre:', nombre);
+    console.log('País:', pais);
+    console.log('Provincia:', provincia);
+    console.log('Localidad:', localidad);
+    console.log('Calle:', calle);
+    console.log('Altura:', altura);
+    console.log('Precio por función:', precio_por_funcion);
+    console.log('Cerrado temporalmente:', cerrado_temporalmente);
 
     if (!id || typeof id !== "number" || !nombre || typeof nombre !== "string" || !pais || typeof pais !== "string" ||
         !provincia || typeof provincia !== "string" || !localidad || typeof localidad !== "string" ||
         !calle || typeof calle !== "string" || !altura || typeof altura !== "number" ||
         !precio_por_funcion || typeof precio_por_funcion !== "number" || typeof cerrado_temporalmente !== "boolean") {
+      console.log('Error de validación');
       res.sendStatus(400);
       return;
     }
 
     const sucursalexiste = await db.query("SELECT nombre FROM sucursales WHERE id <> $1 AND nombre = $2", [id, nombre]);
     if (sucursalexiste.rows.length >= 1) {
+      console.log('Sucursal con el mismo nombre ya existe');
       res.status(400).send("There is already a branch with this name");
       return;
     }
 
     if (sucursalexiste.rows.length === 0) {
+      console.log('Sucursal no encontrada');
       res.status(404).send("Branch not found");
       return;
     }
@@ -493,12 +541,15 @@ server.put("/api/cinema/branches/update", async (req, res) => {
       "localidad = $5, calle = $6, altura = $7, precio_por_funcion = $8, cerrado_temporalmente = $9 " +
       "WHERE id = $1 RETURNING *", [id, nombre, pais, provincia, localidad, calle, altura, precio_por_funcion, cerrado_temporalmente]);
 
+    console.log('Sucursal actualizada:', sucursal.rows[0]);
+
     res.sendStatus(200);
   } catch (error) {
-    console.error(error);
+    console.error('Error:', error);
     res.sendStatus(500);
   }
 });
+
 
 
 server.get("/api/branches", async (req, res) => {
