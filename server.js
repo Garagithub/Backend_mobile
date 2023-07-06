@@ -312,10 +312,10 @@ server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => 
 
     const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala = $2)', [id_sucursal,numero_sala]);
 
-    if (sala.rows.length === 0) {
+    /*if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
       return;
-    }
+    }*/
     const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [sala.rows[0].id])
     const eliminacion = await db.query('delete from salas where id=$1',[sala.rows[0].id] )
 
