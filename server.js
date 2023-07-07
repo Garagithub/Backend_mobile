@@ -270,6 +270,8 @@ server.put('/:idsucursal/:numero_sala/update', async (req, res) => {
   try {
     const {id_sucursal, numero_sala}= req.params;
     const { fila, columna, numero_sala_nuevo } = req.body;
+    console.log('id_sucursal:', id_sucursal);
+    console.log('numero_sala:', numero_sala);
 
     /*if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
