@@ -269,7 +269,7 @@ server.post('/cinema-room/:id_sucursal', async (req, res) => {
 server.put('/:idsucursal/:cinema-room/update', async (req, res) => {
   try {
     const {id_sucursal, numero_sala}= req.params;
-    const { fila, columna } = req.body;
+    const { fila, columna, numero_sala_nuevo } = req.body;
 
     /*if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
@@ -287,7 +287,7 @@ server.put('/:idsucursal/:cinema-room/update', async (req, res) => {
     const salas = await db.query('select * from salas where (id_sucursal=$1 and numero_sala=$2 )', [id_sucursal,numero_sala])
     const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [salas.rows[0].id])
     
-   
+   const update= await db.query ('UPDATE salas SET numero_sala = $2 WHERE id_sala = $1',[salas.rows[0].id,numero_sala_nuevo])
     const multiplicacion = fila * columna
 
    for (let i = 0; i < multiplicacion; i++) {
