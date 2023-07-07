@@ -287,7 +287,7 @@ server.put('/:idsucursal/:cinema_room/update', async (req, res) => {
     const salas = await db.query('select * from salas where (id_sucursal=$1 and numero_sala=$2 )', [id_sucursal,numero_sala])
     const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [salas.rows[0].id])
     
-   const update= await db.query ('UPDATE salas SET numero_sala = $2 WHERE id_sala = $1',[salas.rows[0].id,numero_sala_nuevo])
+   const update= await db.query ('UPDATE salas SET numero_sala = $2 WHERE id = $1',[salas.rows[0].id,numero_sala_nuevo])
     const multiplicacion = fila * columna
 
    for (let i = 0; i < multiplicacion; i++) {
