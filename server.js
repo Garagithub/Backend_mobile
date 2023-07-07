@@ -277,7 +277,7 @@ server.put('/:idsucursal/:numero_sala/update', async (req, res) => {
       return;
     }*/
 
-    const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
+    const sala = await db.query('SELECT * FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
 
     if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
