@@ -266,7 +266,7 @@ server.post('/cinema-room/:id_sucursal', async (req, res) => {
 
 })
 
-server.put('/:idsucursal/:cinema-room/update', async (req, res) => {
+server.put('/:idsucursal/:cinema_room/update', async (req, res) => {
   try {
     const {id_sucursal, numero_sala}= req.params;
     const { fila, columna, numero_sala_nuevo } = req.body;
