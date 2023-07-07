@@ -271,11 +271,11 @@ server.put('/:idsucursal/:cinema-room/update', async (req, res) => {
     const {id_sucursal, numero_sala}= req.params;
     const { fila, columna } = req.body;
 
-    if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
+    /*if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
       res.sendStatus(400);
       return;
-    }
+    }*/
 
     const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
 
