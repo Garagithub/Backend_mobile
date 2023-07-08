@@ -761,29 +761,68 @@ server.get("/api/peliculas/:id", async (req, res) => {
 });
 
 
+// server.post('/api/funciones', async (req, res) => {
+//   try {
+//     const { dia, horario, id_pelicula, id_sala } = req.body;
+
+//     // Validar los campos requeridos y tipos de datos
+//     if (!dia || !horario || typeof id_pelicula !== 'number' || typeof id_sala !== 'number') {
+//       res.sendStatus(400);
+//       return;
+//     }
+
+//     // Verificar si la película y la sala existen en la base de datos
+//     const peliculaExiste = await db.query('SELECT * FROM peliculas WHERE id = $1', [id_pelicula]);
+//     const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
+
+//     if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
+//       res.sendStatus(404);
+//       return;
+//     }
+
+//     const nuevaFuncion = await db.query(
+//       'INSERT INTO funciones (dia, horario, id_pelicula, id_sala) ' +
+//       'VALUES ($1, $2, $3, $4) RETURNING *',
+//       [dia, horario, id_pelicula, id_sala]
+//     );
+
+//     res.status(201).json(nuevaFuncion.rows[0]);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
 server.post('/api/funciones', async (req, res) => {
   try {
-    const { dia, horario, id_pelicula, id_sala } = req.body;
+    const { dia, horario, pelicula, id_sala } = req.body;
 
     // Validar los campos requeridos y tipos de datos
-    if (!dia || !horario || typeof id_pelicula !== 'number' || typeof id_sala !== 'number') {
+    if (!dia || !horario || typeof id_sala !== 'number' || !pelicula || typeof pelicula !== 'object') {
       res.sendStatus(400);
       return;
     }
 
-    // Verificar si la película y la sala existen en la base de datos
-    const peliculaExiste = await db.query('SELECT * FROM peliculas WHERE id = $1', [id_pelicula]);
+    const { titulo, descripcion, genero, imagen } = pelicula;
+
+    // Verificar si la sala existe en la base de datos
     const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
-    if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
+    if (salaExiste.rows.length === 0) {
       res.sendStatus(404);
       return;
     }
 
+    const nuevaPelicula = await db.query(
+      'INSERT INTO peliculas (titulo, descripcion, genero, imagen) ' +
+      'VALUES ($1, $2, $3, $4) RETURNING *',
+      [titulo, descripcion, genero, imagen]
+    );
+
     const nuevaFuncion = await db.query(
       'INSERT INTO funciones (dia, horario, id_pelicula, id_sala) ' +
       'VALUES ($1, $2, $3, $4) RETURNING *',
-      [dia, horario, id_pelicula, id_sala]
+      [dia, horario, nuevaPelicula.rows[0].id, id_sala]
     );
 
     res.status(201).json(nuevaFuncion.rows[0]);
@@ -792,6 +831,7 @@ server.post('/api/funciones', async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 
 server.put('/api/funciones/:id', async (req, res) => {
   try {
