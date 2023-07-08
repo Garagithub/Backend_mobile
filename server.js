@@ -239,13 +239,12 @@ server.delete('/api/users/delete',async(req,res)=>{
 
 server.post('/cinema-room/:id_sucursal', async (req, res) => {
   const { id_sucursal } = req.params;
-  id_sucursal = parseInt(id_sucursal); // Convertir a número enter
   const { fila, columna, numero_sala } = req.body;
 
-  if (typeof id_sucursal !== 'number' || !fila || typeof fila !== 'number' || !columna || typeof columna !== 'number' || !numero_sala || typeof numero_sala !== 'number') {
-    res.sendStatus(400);
-    return;
-  }
+  //if ( !fila || typeof fila !== 'number' || !columna || typeof columna !== 'number' || !numero_sala || typeof numero_sala !== 'number') {
+    //res.sendStatus(400);
+    //return;
+  //}
 
   // Resto del código para crear la sala de cine...
 
@@ -267,28 +266,29 @@ server.post('/cinema-room/:id_sucursal', async (req, res) => {
 
 })
 
-server.put('/:idsucursal/cinema-room/update', async (req, res) => {
+server.put('/:idsucursal/:numero_sala/update', async (req, res) => {
   try {
-    const {id_sucursal}= req.params;
-    const { fila, columna, numero_sala } = req.body;
+    const {id_sucursal, numero_sala}= req.params;
+    const { fila, columna, numero_sala_nuevo } = req.body;
+    console.log('id_sucursal:', id_sucursal);
+    console.log('numero_sala:', numero_sala);
 
-    if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
+    /*if ( !fila || typeof(fila) !== 'number' || !columna || typeof(columna) !== 'number' ||!id_sucursal || typeof(id_sucursal)!== 'number' || !numero_sala 
         || typeof(numero_sala)!=='number' ) {
       res.sendStatus(400);
       return;
-    }
+    }*/
 
-    const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
+    const sala = await db.query('SELECT * FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
 
     if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
-      return;
-    }
-    //pensar bien esto con el tema de asientos y demas
-    const salas = await db.query('select * from salas where (id_sucursal=$1 and numero_sala=$2 )', [id_sucursal,numero_sala])
-    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [salas.rows[0].id])
+      return;}
     
-   
+    //pensar bien esto con el tema de asientos y demas
+    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [sala.rows[0].id])
+    
+   const update= await db.query ('UPDATE salas SET numero_sala = $2 WHERE id = $1',[sala.rows[0].id,numero_sala_nuevo])
     const multiplicacion = fila * columna
 
    for (let i = 0; i < multiplicacion; i++) {
@@ -306,10 +306,10 @@ server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => 
   try {
     const { id_sucursal,numero_sala } = req.params;
 
-    if (!id_sucursal || typeof(id_sucursal) !== 'number' || !numero_sala || typeof(numero_sala)!== 'number') {
-      res.sendStatus(400);
-      return;
-    }
+    //if (!id_sucursal || typeof(id_sucursal) !== 'number' || !numero_sala || typeof(numero_sala)!== 'number') {
+      //res.sendStatus(400);
+      //return;
+    //}
 
     const sala = await db.query('SELECT id FROM salas WHERE (id_sucursal = $1 and numero_sala = $2)', [id_sucursal,numero_sala]);
 
@@ -319,6 +319,26 @@ server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => 
     }
     const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [sala.rows[0].id])
     const eliminacion = await db.query('delete from salas where id=$1',[sala.rows[0].id] )
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+server.delete('/:idsucursal/:cinema_room/deletecinemarooms', async (req, res) => {
+  try {
+    const { idsucursal, cinema_room } = req.params;
+
+    const sala = await db.query('SELECT id FROM salas WHERE id_sucursal = $1 AND numero_sala = $2', [idsucursal, cinema_room]);
+
+    if (sala.rows.length === 0) {
+      res.status(404).send('Cinema room not found');
+      return;
+    }
+
+    const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1', [sala.rows[0].id]);
+    const eliminacion = await db.query('DELETE FROM salas WHERE id = $1', [sala.rows[0].id]);
 
     res.sendStatus(200);
   } catch (error) {
