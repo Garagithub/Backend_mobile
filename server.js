@@ -377,12 +377,29 @@ server.get('/:id_sucursal/cinema-room/getbyid',async (req, res)=>{
 });
 
 
+// server.get('/:id_sucursal/cinema-room/:numero_sala/getbyid', async (req, res) => {
+//   try {
+//     const { id_sucursal, numero_sala } = req.params;
+//     const sala = await db.query('SELECT * FROM salas WHERE id_sucursal = $1 AND numero_sala = $2', [id_sucursal, numero_sala]);
+
+//     if (sala.rows.length > 0) {
+//       res.status(200).json(sala.rows[0]);
+//     } else {
+//       res.status(404).json({ error: 'Sala no encontrada' });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
 server.get('/:id_sucursal/cinema-room/:numero_sala/getbyid', async (req, res) => {
   try {
     const { id_sucursal, numero_sala } = req.params;
     const sala = await db.query('SELECT * FROM salas WHERE id_sucursal = $1 AND numero_sala = $2', [id_sucursal, numero_sala]);
 
     if (sala.rows.length > 0) {
+      console.log('Datos de la sala:', sala.rows[0]); // Agregar el console.log aquí
       res.status(200).json(sala.rows[0]);
     } else {
       res.status(404).json({ error: 'Sala no encontrada' });
@@ -392,6 +409,7 @@ server.get('/:id_sucursal/cinema-room/:numero_sala/getbyid', async (req, res) =>
     res.sendStatus(500);
   }
 });
+
 
 
 
