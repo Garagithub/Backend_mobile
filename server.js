@@ -808,10 +808,10 @@ server.post('/api/funciones', async (req, res) => {
     // Verificar si la sala existe en la base de datos
     const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
-    if (salaExiste.rows.length === 0) {
+    /*if (salaExiste.rows.length === 0) {
       res.sendStatus(404);
       return;
-    }
+    }*/
 
     const nuevaPelicula = await db.query(
       'INSERT INTO peliculas (titulo, descripcion, genero, imagen) ' +
