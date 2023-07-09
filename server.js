@@ -798,10 +798,10 @@ server.post('/api/funciones', async (req, res) => {
     const { titulo, descripcion, genero, imagen,dia, horario, id_sala } = req.body;
 
     // Validar los campos requeridos y tipos de datos
-    if (!dia || !horario || typeof id_sala !== 'number' /*|| !pelicula || typeof pelicula !== 'object'*/) {
+    /*if (!dia || !horario || typeof id_sala !== 'number' /*|| !pelicula || typeof pelicula !== 'object') {
       res.sendStatus(400);
       return;
-    }
+    }*/
 
    //const { titulo, descripcion, genero, imagen } = pelicula;
 
