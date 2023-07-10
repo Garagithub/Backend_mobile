@@ -797,6 +797,8 @@ server.post('/api/funciones', async (req, res) => {
   try {
     const { dia, horario, pelicula, id_sala } = req.body;
 
+    console.log('Datos recibidos:', dia, horario, pelicula, id_sala);
+
     // Validar los campos requeridos y tipos de datos
     if (!dia || !horario || typeof id_sala !== 'number' || !pelicula || typeof pelicula !== 'object') {
       res.sendStatus(400);
@@ -824,6 +826,8 @@ server.post('/api/funciones', async (req, res) => {
       'VALUES ($1, $2, $3, $4) RETURNING *',
       [dia, horario, nuevaPelicula.rows[0].id, id_sala]
     );
+
+    console.log('Nueva función creada:', nuevaFuncion.rows[0]);
 
     res.status(201).json(nuevaFuncion.rows[0]);
   } catch (error) {
