@@ -795,9 +795,8 @@ server.get("/api/peliculas/:id", async (req, res) => {
 
 server.post('/api/funciones/:id_sala/create', async (req, res) => {
   try {
-    const {id_sala} =req.params;
-    const { titulo, descripcion, genero, imagen,dia, horario } = req.body;
-    
+    const { titulo, descripcion, genero, imagen,dia, horario, id_sala } = req.body;
+
     // Validar los campos requeridos y tipos de datos
     /*if (!dia || !horario || typeof id_sala !== 'number' /*|| !pelicula || typeof pelicula !== 'object') {
       res.sendStatus(400);
@@ -825,6 +824,8 @@ server.post('/api/funciones/:id_sala/create', async (req, res) => {
       'VALUES ($1, $2, $3, $4) RETURNING *',
       [dia, horario, nuevaPelicula.rows[0].id, id_sala]
     );
+
+    console.log('Nueva función creada:', nuevaFuncion.rows[0]);
 
     res.status(201).json(nuevaFuncion.rows[0]);
   } catch (error) {
@@ -929,17 +930,18 @@ server.get("/api/functions/:idSala", async (req, res) => {
 server.get("/api/functions/:id/getbyid", async (req, res) => {
   const { id } = req.params;
   try {
-    const functions = await db.query("SELECT id, dia, horario, id_pelicula, id_sala FROM funciones WHERE id = $1", [id]);
-    if (functions.rows.length === 0) {
+    const result = await db.query("SELECT f.id, f.dia, f.horario, p.titulo, p.descripcion, p.imagen, s.numero_sala FROM funciones f join peliculas p ON p.id = f.id_pelicula join salas s on f.id_sala = s.id WHERE f.id = $1", [id]);
+    if (result.rows.length === 0) {
       res.sendStatus(404);
       return;
     }
-    res.json(functions.rows[0]);
+    res.json(result.rows[0]);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 server.post("/api/comments", async (req, res) => {
   const { rating, comentario, id_user, id_pelicula } = req.body;
