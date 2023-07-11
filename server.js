@@ -926,7 +926,7 @@ server.get("/api/functions/:idSala", async (req, res) => {
 
 
 
-server.get("/api/functions/:id", async (req, res) => {
+server.get("/api/functions/:id/getbyid", async (req, res) => {
   const { id } = req.params;
   try {
     const functions = await db.query("SELECT id, dia, horario, id_pelicula, id_sala FROM funciones WHERE id = $1", [id]);
