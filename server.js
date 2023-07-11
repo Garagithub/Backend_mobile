@@ -793,10 +793,11 @@ server.get("/api/peliculas/:id", async (req, res) => {
 //   }
 // });
 
-server.post('/api/funciones', async (req, res) => {
+server.post('/api/funciones/:id_sala/create', async (req, res) => {
   try {
-    const { titulo, descripcion, genero, imagen,dia, horario, id_sala } = req.body;
-
+    
+    const { titulo, descripcion, genero, imagen,dia, horario } = req.body;
+    const {id_sala} =req.params;
     // Validar los campos requeridos y tipos de datos
     /*if (!dia || !horario || typeof id_sala !== 'number' /*|| !pelicula || typeof pelicula !== 'object') {
       res.sendStatus(400);
