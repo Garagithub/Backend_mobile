@@ -930,7 +930,7 @@ server.get("/api/functions/:idSala", async (req, res) => {
 server.get("/api/functions/:id/getbyid", async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await db.query("SELECT f.id, f.dia, f.horario, p.titulo, s.numero_sala FROM funciones f join peliculas p ON p.id = f.id_pelicula join salas s on f.id_sala = s.id WHERE f.id = $1", [id]);
+    const result = await db.query("SELECT f.id, f.dia, f.horario, p.titulo, p.descripcion, p.imagen, s.numero_sala FROM funciones f join peliculas p ON p.id = f.id_pelicula join salas s on f.id_sala = s.id WHERE f.id = $1", [id]);
     if (result.rows.length === 0) {
       res.sendStatus(404);
       return;
