@@ -281,10 +281,10 @@ server.put('/:idsucursal/:numero_sala/update', async (req, res) => {
 
     const sala = await db.query('SELECT * FROM salas WHERE (id_sucursal = $1 and numero_sala=$2) ', [id_sucursal,numero_sala]);
 
-    if (sala.rows.length === 0) {
+    /*if (sala.rows.length === 0) {
       res.status(404).send('Cinema room not found');
       return;}
-    
+    */
     //pensar bien esto con el tema de asientos y demas
     const eliminar_asientos = await db.query('DELETE FROM asientos WHERE id_sala = $1 ', [sala.rows[0].id])
     
@@ -793,11 +793,9 @@ server.get("/api/peliculas/:id", async (req, res) => {
 //   }
 // });
 
-server.post('/api/funciones', async (req, res) => {
+server.post('/api/funciones/:id_sala/create', async (req, res) => {
   try {
     const { titulo, descripcion, genero, imagen,dia, horario, id_sala } = req.body;
-
-    console.log('Datos recibidos:', dia, horario, pelicula, id_sala);
 
     // Validar los campos requeridos y tipos de datos
     /*if (!dia || !horario || typeof id_sala !== 'number' /*|| !pelicula || typeof pelicula !== 'object') {
@@ -808,7 +806,7 @@ server.post('/api/funciones', async (req, res) => {
    //const { titulo, descripcion, genero, imagen } = pelicula;
 
     // Verificar si la sala existe en la base de datos
-    const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
+    //const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
     /*if (salaExiste.rows.length === 0) {
       res.sendStatus(404);
@@ -929,20 +927,21 @@ server.get("/api/functions/:idSala", async (req, res) => {
 
 
 
-server.get("/api/functions/:id", async (req, res) => {
+server.get("/api/functions/:id/getbyid", async (req, res) => {
   const { id } = req.params;
   try {
-    const functions = await db.query("SELECT id, dia, horario, id_pelicula, id_sala FROM funciones WHERE id = $1", [id]);
-    if (functions.rows.length === 0) {
+    const result = await db.query("SELECT f.id, f.dia, f.horario, p.titulo, s.numero_sala FROM funciones f join peliculas p ON p.id = f.id_pelicula join salas s on f.id_sala = s.id WHERE f.id = $1", [id]);
+    if (result.rows.length === 0) {
       res.sendStatus(404);
       return;
     }
-    res.json(functions.rows[0]);
+    res.json(result.rows[0]);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 server.post("/api/comments", async (req, res) => {
   const { rating, comentario, id_user, id_pelicula } = req.body;
