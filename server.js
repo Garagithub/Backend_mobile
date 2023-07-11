@@ -807,7 +807,7 @@ server.post('/api/funciones/:id_sala/create', async (req, res) => {
    //const { titulo, descripcion, genero, imagen } = pelicula;
 
     // Verificar si la sala existe en la base de datos
-    const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
+    //const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
     /*if (salaExiste.rows.length === 0) {
       res.sendStatus(404);
