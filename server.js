@@ -1152,7 +1152,7 @@ server.get("/api/reservas/:id", async (req, res) => {
   }
 });
 
-server.post("api/createUser", async(req,res)=>{
+server.post("/api/createUser", async(req,res)=>{
   try{
     const { nombre, apellido, imagen } = req.body;
 
