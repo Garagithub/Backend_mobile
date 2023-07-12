@@ -1158,7 +1158,9 @@ server.post("api/createUser", async(req,res)=>{
 
   // Consulta SQL para insertar los datos en la tabla 'usuarios'
   const crearusuario = await db.query(`INSERT INTO usuarios (nombre, apellido, imagen) VALUES ($1, $2, $3)`,[nombre,apellido,imagen]);
+  console.log('Nueva función creada:', crearusuario.rows[0]);
 
+  res.status(201).json(crearusuario.rows[0]);
 
 
 
