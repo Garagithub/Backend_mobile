@@ -1152,6 +1152,26 @@ server.get("/api/reservas/:id", async (req, res) => {
   }
 });
 
+server.post("api/createUser", async(req,res)=>{
+  try{
+    const { nombre, apellido, imagen } = req.body;
+
+  // Consulta SQL para insertar los datos en la tabla 'usuarios'
+  const crearusuario = await db.query(`INSERT INTO usuarios (nombre, apellido, imagen) VALUES ($1, $2, $3)`,[nombre,apellido,imagen]);
+
+
+
+
+  }
+  catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+
+
+
+});
+
 
 server.listen(port,()=> console.log('El servidor está escuchando en localhost: '+ port));
 
