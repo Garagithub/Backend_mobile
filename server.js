@@ -873,11 +873,11 @@ server.put('/api/funciones/:id', async (req, res) => {
   }
 });
 
-server.delete('/api/funciones/:id', async (req, res) => {
+server.delete('/api/funciones/:id/deletebyid', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const funcionEliminada = await db.query('DELETE FROM funcion WHERE id=$1 RETURNING *', [id]);
+    const funcionEliminada = await db.query('DELETE FROM funciones WHERE id=$1 RETURNING *', [id]);
 
     if (funcionEliminada.rows.length === 0) {
       res.sendStatus(404);
