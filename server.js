@@ -908,7 +908,7 @@ server.get("/api/functions/:idSala", async (req, res) => {
     const { idSala } = req.params;
 
     const query = `
-      SELECT s.numero_sala AS numero_sala, p.titulo AS nombre_pelicula, f.dia, f.horario
+      SELECT s.numero_sala AS numero_sala, p.titulo AS nombre_pelicula, f.dia, f.horario, f.id
       FROM salas s
       JOIN funciones f ON f.id_sala = s.id
       JOIN peliculas p ON p.id = f.id_pelicula
