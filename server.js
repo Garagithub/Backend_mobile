@@ -1154,16 +1154,16 @@ server.get("/api/reservas/:id", async (req, res) => {
 
 server.post("/api/createuser", async (req, res) => {
   try {
-    const { id,nombre, apellido, imagen } = req.body;
+    const { id,nombre, apellido } = req.body;
     
     // Verificar que se proporcionen los valores requeridos y sean del tipo correcto
-    if (!nombre || !apellido || !imagen) {
+    if (!nombre || !apellido ) {
       res.sendStatus(400);
       return;
     }
     
     // Consulta SQL para insertar los valores en la tabla 'usuarios'
-    const crearUsuario = await db.query("INSERT INTO usuarios (id,nombre, apellido, imagen) VALUES ($1, $2, $3,$4) RETURNING *", [id,nombre, apellido, imagen]);
+    const crearUsuario = await db.query("INSERT INTO usuarios (id,nombre, apellido) VALUES ($1, $2, $3) RETURNING *", [id,nombre, apellido]);
     
     res.status(201).json(crearUsuario.rows[0]);
   } catch (error) {
