@@ -1152,27 +1152,26 @@ server.get("/api/reservas/:id", async (req, res) => {
   }
 });
 
-server.post("/api/createUser", async(req,res)=>{
-  try{
+server.post("/api/createuser", async (req, res) => {
+  try {
     const { nombre, apellido, imagen } = req.body;
-
-  // Consulta SQL para insertar los datos en la tabla 'usuarios'
-  const crearusuario = await db.query("INSERT INTO usuarios (nombre, apellido, imagen) VALUES ($1, $2, $3)",[nombre,apellido,imagen]);
-  console.log('Nueva función creada:', crearusuario);
-
-  res.status(201).json(crearusuario);
-
-
-
-  }
-  catch (error) {
+    
+    // Verificar que se proporcionen los valores requeridos y sean del tipo correcto
+    if (!nombre || !apellido || !imagen) {
+      res.sendStatus(400);
+      return;
+    }
+    
+    // Consulta SQL para insertar los valores en la tabla 'usuarios'
+    const crearUsuario = await db.query("INSERT INTO usuarios (nombre, apellido, imagen) VALUES ($1, $2, $3) RETURNING *", [nombre, apellido, imagen]);
+    
+    res.status(201).json(crearUsuario.rows[0]);
+  } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
-
-
-
 });
+
 
 
 server.listen(port,()=> console.log('El servidor está escuchando en localhost: '+ port));
