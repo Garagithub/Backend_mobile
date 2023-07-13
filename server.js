@@ -1154,20 +1154,28 @@ server.get("/api/reservas/:id", async (req, res) => {
 
 server.post("/api/createuser", async (req, res) => {
   try {
-    const {nombre, apellido } = req.body;
-    
+    const { nombre, apellido, imagen, id_google } = req.body;
+
     // Verificar que se proporcionen los valores requeridos y sean del tipo correcto
-    if (!nombre || !apellido ) {
+    if (!nombre || !apellido) {
       res.sendStatus(400);
       return;
     }
-    
-    // Consulta SQL para insertar los valores en la tabla 'usuarios'
-    const crearUsuario = await db.query("INSERT INTO usuarios (nombre, apellido) VALUES ($1, $2) RETURNING *", [nombre, apellido]);
-    
+
+    // Consulta SQL para verificar si ya existe un registro con el mismo id_google
+    const existeUsuario = await db.query("SELECT * FROM usuarios WHERE id_google = $1", [id_google]);
+
+    if (existeUsuario.rows.length > 0) {
+      // Ya existe un registro con el mismo id_google
+      res.status(409).json({ error: "Ya existe un usuario con el mismo id_google" });
+      return;
+    }
+
+    // Si no existe un registro con el mismo id_google, realizar la inserción
+    const crearUsuario = await db.query("INSERT INTO usuarios (nombre, apellido, imagen, id_google) VALUES ($1, $2, $3, $4) RETURNING *", [nombre, apellido, imagen, id_google]);
+
     res.status(201).json(crearUsuario.rows[0]);
   } catch (error) {
-    console.log()
     console.error(error);
     res.sendStatus(500);
   }
