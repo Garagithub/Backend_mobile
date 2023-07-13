@@ -328,7 +328,8 @@ server.put('/:id_sucursal/:numero_sala/update', async (req, res) => {
     const totalAsientosNuevo = fila * columna;
 
     // Actualizar el número de sala
-    await db.query('UPDATE salas SET numero_sala = $1 WHERE id = $2', [numero_sala_nuevo, salaId]);
+    await db.query('UPDATE salas SET numero_sala = $1 WHERE id_sucursal = $2 AND numero_sala = $3', [numero_sala_nuevo, id_sucursal, numero_sala]);
+
 
     // Actualizar las filas y columnas de la sala
     await db.query('UPDATE salas SET fila = $1, columna = $2 WHERE id = $3', [fila, columna, salaId]);
