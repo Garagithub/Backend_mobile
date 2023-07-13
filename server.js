@@ -241,16 +241,16 @@ server.post('/cinema-room/:id_sucursal', async (req, res) => {
   const { id_sucursal } = req.params;
   const { fila, columna, numero_sala } = req.body;
 
-  //if ( !fila || typeof fila !== 'number' || !columna || typeof columna !== 'number' || !numero_sala || typeof numero_sala !== 'number') {
-    //res.sendStatus(400);
-    //return;
-  //}
+  if ( !fila || typeof fila !== 'number' || !columna || typeof columna !== 'number' || !numero_sala || typeof numero_sala !== 'number') {
+    res.sendStatus(400);
+    return;
+  }
 
   // Resto del código para crear la sala de cine...
 
 
 
-   const sala = await db.query('insert into salas (id_sucursal,numero_sala) values($1,$2) returning *', [id_sucursal,numero_sala])
+   const sala = await db.query('insert into salas (id_sucursal,numero_sala, fila, columna) values($1,$2, $3, $4) returning *', [id_sucursal,numero_sala,fila,columna])
 
    const multiplicacion = fila * columna
 
