@@ -302,41 +302,45 @@ server.post('/cinema-room/:id_sucursal', async (req, res) => {
 //   }
 // });
 
-
 server.put('/:id_sucursal/:numero_sala/update', async (req, res) => {
   const { id_sucursal, numero_sala } = req.params;
-  const { fila, columna } = req.body;
+  const { fila, columna, numero_sala_nuevo } = req.body;
 
-  if (!fila || typeof fila !== 'number' || !columna || typeof columna !== 'number') {
+  if (!fila || typeof fila !== 'number' || !columna || typeof columna !== 'number' || !numero_sala_nuevo || typeof numero_sala_nuevo !== 'number') {
     res.sendStatus(400);
     return;
   }
 
   try {
-    // Obtener la sala de cine existente
-    const sala = await db.query('SELECT * FROM salas WHERE id_sucursal = $1 AND numero_sala = $2', [id_sucursal, numero_sala]);
+    // Verificar si existe una sala con el número de sala actual
+    const salaExistente = await db.query('SELECT * FROM salas WHERE id_sucursal = $1 AND numero_sala = $2', [id_sucursal, numero_sala]);
 
-    if (sala.rows.length === 0) {
+    if (!salaExistente.rows[0]) {
       res.sendStatus(404);
       return;
     }
 
-    const salaId = sala.rows[0].id;
-    const currentFilas = sala.rows[0].fila;
-    const currentColumnas = sala.rows[0].columna;
-    const currentTotalAsientos = currentFilas * currentColumnas;
-    const newTotalAsientos = fila * columna;
-    const asientosToDelete = currentTotalAsientos - newTotalAsientos;
+    // Obtener el ID de la sala existente
+    const salaId = salaExistente.rows[0].id;
 
-    // Actualizar la sala de cine con las nuevas filas y columnas
+    // Calcular el total de asientos actual y el nuevo total de asientos
+    const totalAsientosActual = salaExistente.rows[0].fila * salaExistente.rows[0].columna;
+    const totalAsientosNuevo = fila * columna;
+
+    // Actualizar el número de sala
+    await db.query('UPDATE salas SET numero_sala = $1 WHERE id_sucursal = $2 AND numero_sala = $3', [numero_sala_nuevo, id_sucursal, numero_sala]);
+
+    // Actualizar las filas y columnas de la sala
     await db.query('UPDATE salas SET fila = $1, columna = $2 WHERE id = $3', [fila, columna, salaId]);
 
-    if (asientosToDelete > 0) {
-      // Eliminar asientos si el nuevo total es menor al anterior
-      await db.query('DELETE FROM asientos WHERE id_sala = $1 AND nro_asiento > $2', [salaId, newTotalAsientos]);
-    } else if (asientosToDelete < 0) {
-      // Agregar asientos si el nuevo total es mayor al anterior
-      for (let i = currentTotalAsientos + 1; i <= newTotalAsientos; i++) {
+    // Si el nuevo total de asientos es menor, eliminar los asientos adicionales
+    if (totalAsientosNuevo < totalAsientosActual) {
+      const asientosEliminar = totalAsientosActual - totalAsientosNuevo;
+      await db.query('DELETE FROM asientos WHERE id_sala = $1 AND nro_asiento > $2', [salaId, totalAsientosNuevo]);
+    }
+    // Si el nuevo total de asientos es mayor, agregar nuevos asientos
+    else if (totalAsientosNuevo > totalAsientosActual) {
+      for (let i = totalAsientosActual + 1; i <= totalAsientosNuevo; i++) {
         await db.query('INSERT INTO asientos (nro_asiento, id_sala, reservada) VALUES ($1, $2, $3)', [i, salaId, false]);
       }
     }
@@ -347,6 +351,7 @@ server.put('/:id_sucursal/:numero_sala/update', async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 
 
 server.delete('/:idsucursal/:cinema-room/deletecinemaroom', async (req, res) => {
