@@ -1154,7 +1154,7 @@ server.get("/api/reservas/:id", async (req, res) => {
 
 server.post("/api/createuser", async (req, res) => {
   try {
-    const { nombre, apellido, imagen, id_google } = req.body;
+    const { nombre, apellido, imagen, mail } = req.body;
 
     // Verificar que se proporcionen los valores requeridos y sean del tipo correcto
     if (!nombre || !apellido) {
@@ -1163,16 +1163,16 @@ server.post("/api/createuser", async (req, res) => {
     }
 
     // Consulta SQL para verificar si ya existe un registro con el mismo id_google
-    const existeUsuario = await db.query("SELECT * FROM usuarios WHERE id_google = $1", [id_google]);
+    const existeUsuario = await db.query("SELECT * FROM usuarios WHERE mail = $1", [mail]);
 
     if (existeUsuario.rows.length > 0) {
       // Ya existe un registro con el mismo id_google
-      res.status(409).json({ error: "Ya existe un usuario con el mismo id_google" });
+      res.status(409).json({ error: "Ya existe un usuario con el mismo mail" });
       return;
     }
 
     // Si no existe un registro con el mismo id_google, realizar la inserción
-    const crearUsuario = await db.query("INSERT INTO usuarios (nombre, apellido, imagen, id_google) VALUES ($1, $2, $3, $4) RETURNING *", [nombre, apellido, imagen, id_google]);
+    const crearUsuario = await db.query("INSERT INTO usuarios (nombre, apellido, imagen, mail) VALUES ($1, $2, $3, $4) RETURNING *", [nombre, apellido, imagen, mail]);
 
     res.status(201).json(crearUsuario.rows[0]);
   } catch (error) {
