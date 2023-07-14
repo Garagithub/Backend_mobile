@@ -930,10 +930,10 @@ server.post('/api/funciones/:id_sala/create', async (req, res) => {
 //   }
 // });
 //
-server.put('/api/funciones/:id', async (req, res) => {
+server.put('/api/funciones/:id/:id_pelicula/:id:sala', async (req, res) => {
   try {
-    const { id } = req.params;
-    const { dia, horario, id_pelicula, id_sala, titulo, descripcion, genero, imagen } = req.body;
+    const { id, id_pelicula, id_sala } = req.params;
+    const { dia, horario, titulo, descripcion, genero, imagen } = req.body;
 
     // Validar los campos requeridos y tipos de datos
     if (!dia || !horario || typeof id_pelicula !== 'number' || typeof id_sala !== 'number') {
