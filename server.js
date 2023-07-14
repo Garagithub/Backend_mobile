@@ -1005,7 +1005,12 @@ server.delete('/api/funciones/:id/deletebyid', async (req, res) => {
 
 server.get("/api/functions", async (req, res) => {
   try {
-    const functions = await db.query("SELECT id, dia, horario, id_pelicula, id_sala FROM funciones");
+    const functions = await db.query(`
+      SELECT f.id, f.dia, f.horario, p.titulo, AS pelicula, p.imagen, s.numero_sala AS sala
+      FROM funciones f
+      INNER JOIN peliculas p ON f.id_pelicula = p.id
+      INNER JOIN salas s ON f.id_sala = s.id
+    `);
     res.json(functions.rows);
   } catch (error) {
     console.error(error);
