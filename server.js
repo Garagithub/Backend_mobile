@@ -237,7 +237,7 @@ server.delete('/api/users/delete', async (req, res) => {
   }
 })
 
-app.get('/usuarios/:id', async (req, res) => {
+server.get('/usuarios/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
