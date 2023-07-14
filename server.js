@@ -237,12 +237,12 @@ server.delete('/api/users/delete', async (req, res) => {
   }
 })
 
-server.get('/usuarios/:id', async (req, res) => {
-  const { id } = req.params;
+server.get('/usuarios', async (req, res) => {
+  const { user_email } = req.query;
 
   try {
-    const query = 'SELECT * FROM usuarios WHERE id = $1';
-    const values = [id];
+    const query = 'SELECT * FROM usuarios WHERE mail = $1';
+    const values = [user_email];
 
     const result = await pool.query(query, values);
 
@@ -257,6 +257,7 @@ server.get('/usuarios/:id', async (req, res) => {
     res.status(500).json({ error: 'Error en el servidor' });
   }
 });
+
 
 server.post('/cinema-room/:id_sucursal', async (req, res) => {
   const { id_sucursal } = req.params;
