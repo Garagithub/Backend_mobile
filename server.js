@@ -237,7 +237,26 @@ server.delete('/api/users/delete', async (req, res) => {
   }
 })
 
-//a
+app.get('/usuarios/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'SELECT * FROM usuarios WHERE id = $1';
+    const values = [id];
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length > 0) {
+      const usuario = result.rows[0];
+      res.json(usuario);
+    } else {
+      res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error al obtener los datos del usuario:', error);
+    res.status(500).json({ error: 'Error en el servidor' });
+  }
+});
 
 server.post('/cinema-room/:id_sucursal', async (req, res) => {
   const { id_sucursal } = req.params;
