@@ -890,10 +890,48 @@ server.post('/api/funciones/:id_sala/create', async (req, res) => {
 });
 
 
+// server.put('/api/funciones/:id', async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { dia, horario, id_pelicula, id_sala } = req.body;
+
+//     // Validar los campos requeridos y tipos de datos
+//     if (!dia || !horario || typeof id_pelicula !== 'number' || typeof id_sala !== 'number') {
+//       res.sendStatus(400);
+//       return;
+//     }
+
+//     // Verificar si la película y la sala existen en la base de datos
+//     const peliculaExiste = await db.query('SELECT * FROM peliculas WHERE id = $1', [id_pelicula]);
+//     const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
+
+//     if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
+//       res.sendStatus(404);
+//       return;
+//     }
+
+//     const funcionActualizada = await db.query(
+//       'UPDATE funciones SET dia=$1, horario=$2, id_pelicula=$3, id_sala=$4 ' +
+//       'WHERE id=$5 RETURNING *',
+//       [dia, horario, id_pelicula, id_sala, id]
+//     );
+
+//     if (funcionActualizada.rows.length === 0) {
+//       res.sendStatus(404);
+//       return;
+//     }
+
+//     res.json(funcionActualizada.rows[0]);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
 server.put('/api/funciones/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { dia, horario, id_pelicula, id_sala } = req.body;
+    const { dia, horario, id_pelicula, id_sala, titulo, descripcion, genero, imagen } = req.body;
 
     // Validar los campos requeridos y tipos de datos
     if (!dia || !horario || typeof id_pelicula !== 'number' || typeof id_sala !== 'number') {
@@ -910,6 +948,7 @@ server.put('/api/funciones/:id', async (req, res) => {
       return;
     }
 
+    // Actualizar la función
     const funcionActualizada = await db.query(
       'UPDATE funciones SET dia=$1, horario=$2, id_pelicula=$3, id_sala=$4 ' +
       'WHERE id=$5 RETURNING *',
@@ -921,12 +960,27 @@ server.put('/api/funciones/:id', async (req, res) => {
       return;
     }
 
+    // Actualizar los campos adicionales de la película si se proporcionan
+    if (titulo || descripcion || genero || imagen) {
+      const peliculaActualizada = await db.query(
+        'UPDATE peliculas SET titulo=$1, descripcion=$2, genero=$3, imagen=$4 ' +
+        'WHERE id=$5 RETURNING *',
+        [titulo, descripcion, genero, imagen, id_pelicula]
+      );
+
+      if (peliculaActualizada.rows.length === 0) {
+        res.sendStatus(404);
+        return;
+      }
+    }
+
     res.json(funcionActualizada.rows[0]);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
+
 
 server.delete('/api/funciones/:id/deletebyid', async (req, res) => {
   try {
