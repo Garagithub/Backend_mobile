@@ -929,7 +929,7 @@ server.post('/api/funciones/:id_sala/create', async (req, res) => {
 //     res.sendStatus(500);
 //   }
 // });
-
+//
 server.put('/api/funciones/:id', async (req, res) => {
   try {
     const { id } = req.params;
