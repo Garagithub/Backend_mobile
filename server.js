@@ -936,7 +936,7 @@ server.put('/api/funciones/:id/:id_pelicula/:id:sala', async (req, res) => {
     const { dia, horario, titulo, descripcion, genero, imagen } = req.body;
 
     // Validar los campos requeridos y tipos de datos
-    if (!dia || !horario || typeof id_pelicula !== 'number' || typeof id_sala !== 'number') {
+    if (!dia || !horario ) {
       res.sendStatus(400);
       return;
     }
