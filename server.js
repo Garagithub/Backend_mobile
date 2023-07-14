@@ -937,7 +937,7 @@ server.put('/api/funciones/:id/:id_pelicula/:id:sala', async (req, res) => {
 
     // Validar los campos requeridos y tipos de datos
     if (!dia || !horario ) {
-      res.sendStatus(400);
+      res.sendStatus("punto1",400);
       return;
     }
 
@@ -945,10 +945,10 @@ server.put('/api/funciones/:id/:id_pelicula/:id:sala', async (req, res) => {
     const peliculaExiste = await db.query('SELECT * FROM peliculas WHERE id = $1', [id_pelicula]);
     const salaExiste = await db.query('SELECT * FROM salas WHERE id = $1', [id_sala]);
 
-    /*if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
-      res.sendStatus(404);
+    if (peliculaExiste.rows.length === 0 || salaExiste.rows.length === 0) {
+      res.sendStatus("punto1",404);
       return;
-    }*/
+    }
 
     // Actualizar la función
     const funcionActualizada = await db.query(
@@ -958,7 +958,7 @@ server.put('/api/funciones/:id/:id_pelicula/:id:sala', async (req, res) => {
     );
 
     if (funcionActualizada.rows.length === 0) {
-      res.sendStatus(404);
+      res.sendStatus("punto2",404);
       return;
     }
 
@@ -971,7 +971,7 @@ server.put('/api/funciones/:id/:id_pelicula/:id:sala', async (req, res) => {
       );
 
       if (peliculaActualizada.rows.length === 0) {
-        res.sendStatus(404);
+        res.sendStatus("punto3",404);
         return;
       }
     }
