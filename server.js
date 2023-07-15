@@ -1114,22 +1114,24 @@ server.get("/api/functions/:id/getbyid", async (req, res) => {
 //   }
 // });
 
-server.post('/peliculas/:id_pelicula/comentarios/:id_user', (req, res) => {
-  // Obtener los datos del cuerpo de la solicitud
-  const { id_pelicula, id_user } = req.params;
-  const { rating, comentario } = req.body;
+server.post('/peliculas/:id_pelicula/comentarios/:id_user', async (req, res) => {
+  try {
+    const { id_pelicula, id_user } = req.params;
+    const { rating, comentario } = req.body;
 
-  // Verificar si todos los parámetros requeridos están presentes
-  // if (!rating || !comentario) {
-  //   return res.status(400).json({ error: 'Faltan parámetros obligatorios' });
-  // }
+    // Realizar la inserción del comentario en la base de datos
+    const query = 'INSERT INTO comentarios (rating, comentario, id_user, id_pelicula) VALUES ($1, $2, $3, $4)';
+    const values = [rating, comentario, id_user, id_pelicula];
+    await db.query(query, values);
 
-  // Realizar las operaciones necesarias para crear el comentario en la base de datos
-  // Utiliza id_user y id_pelicula para guardar el comentario en la relación adecuada
-
-  // Ejemplo de respuesta exitosa
-  res.status(201).json({ message: 'Comentario creado con éxito' });
+    // Responder con un mensaje de éxito
+    res.status(201).json({ message: 'Comentario creado con éxito' });
+  } catch (error) {
+    console.error('Error al crear el comentario:', error);
+    res.status(500).json({ error: 'Error al crear el comentario' });
+  }
 });
+
 
 server.put("/api/comments/:id", async (req, res) => {
   const { id } = req.params;
