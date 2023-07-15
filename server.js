@@ -1119,6 +1119,13 @@ server.post('/peliculas/:id_pelicula/comentarios/:id_user', async (req, res) => 
     const { id_pelicula, id_user } = req.params;
     const { rating, comentario } = req.body;
 
+    console.log('Valores del cuerpo de la solicitud:', rating, comentario);
+
+    if (!rating || !comentario) {
+      return res.status(400).json({ error: 'Faltan parámetros obligatorios' });
+    }
+
+
     // Realizar la inserción del comentario en la base de datos
     const query = 'INSERT INTO comentarios (rating, comentario, id_user, id_pelicula) VALUES ($1, $2, $3, $4)';
     const values = [rating, comentario, id_user, id_pelicula];
@@ -1131,6 +1138,7 @@ server.post('/peliculas/:id_pelicula/comentarios/:id_user', async (req, res) => 
     res.status(500).json({ error: 'Error al crear el comentario' });
   }
 });
+
 
 
 server.put("/api/comments/:id", async (req, res) => {
