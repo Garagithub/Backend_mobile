@@ -1120,6 +1120,9 @@ server.post('/peliculas/:id_pelicula/comentarios/:id_user', async (req, res) => 
     const { rating, comentario } = req.body;
 
     console.log('Valores del cuerpo de la solicitud:', rating, comentario);
+    console.log('ID de la película:', id_pelicula);
+    console.log('ID del usuario:', id_user);
+
 
     if (!rating || !comentario) {
       return res.status(400).json({ error: 'Faltan parámetros obligatorios' });
