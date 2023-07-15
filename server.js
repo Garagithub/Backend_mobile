@@ -1232,7 +1232,7 @@ server.put("/api/comments/:id", async (req, res) => {
 //   }
 // });
 
-server.get('/peliculas/:id_pelicula/comentarios', async (req, res) => {
+server.get('/peliculas/:id_pelicula/comentarios/obtenercomentarios', async (req, res) => {
   const { id_pelicula } = req.params;
   console.log('ID de la película:', id_pelicula);
 
