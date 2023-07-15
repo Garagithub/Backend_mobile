@@ -1233,6 +1233,11 @@ server.get('/peliculas/:id_pelicula/comentarios', async (req, res) => {
   const { id_pelicula } = req.params;
 
   try {
+    // Verifica si se proporcionó un ID de película válido
+    if (!id_pelicula) {
+      return res.status(400).json({ error: 'ID de película inválido' });
+    }
+
     // Ejecuta una consulta para obtener los comentarios de la película desde la base de datos
     const query = 'SELECT * FROM comentarios WHERE id_pelicula = $1';
     const values = [id_pelicula];
@@ -1245,6 +1250,7 @@ server.get('/peliculas/:id_pelicula/comentarios', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener los comentarios' });
   }
 });
+
 
 
 server.delete("/api/comments/:id", async (req, res) => {
