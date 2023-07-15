@@ -1203,7 +1203,7 @@ server.get('/peliculas/:id_pelicula/comentarios', async (req, res) => {
     // Ejecuta una consulta para obtener los comentarios de la película desde la base de datos
     const query = 'SELECT * FROM comentarios WHERE id_pelicula = $1';
     const values = [id_pelicula];
-    const result = await pool.query(query, values);
+    const result = await db.query(query, values);
 
     // Devuelve los comentarios como respuesta
     res.json(result.rows);
