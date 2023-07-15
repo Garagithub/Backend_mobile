@@ -1081,38 +1081,38 @@ server.get("/api/functions/:id/getbyid", async (req, res) => {
 });
 
 
-server.post("/api/comments", async (req, res) => {
-  const { rating, comentario, id_user, id_pelicula } = req.body;
+// server.post("/api/comments", async (req, res) => {
+//   const { rating, comentario, id_user, id_pelicula } = req.body;
 
-  // Verificar que los datos sean del tipo correspondiente
-  if (
-    typeof rating !== "number" ||
-    typeof comentario !== "string" ||
-    typeof id_user !== "number" ||
-    typeof id_pelicula !== "number"
-  ) {
-    res.status(400).send("Invalid data types");
-    return;
-  }
+//   // Verificar que los datos sean del tipo correspondiente
+//   if (
+//     typeof rating !== "number" ||
+//     typeof comentario !== "string" ||
+//     typeof id_user !== "number" ||
+//     typeof id_pelicula !== "number"
+//   ) {
+//     res.status(400).send("Invalid data types");
+//     return;
+//   }
 
-  // Verificar la longitud del comentario
-  if (comentario.length > 200) {
-    res.status(400).send("Comment exceeds the maximum length");
-    return;
-  }
+//   // Verificar la longitud del comentario
+//   if (comentario.length > 200) {
+//     res.status(400).send("Comment exceeds the maximum length");
+//     return;
+//   }
 
-  try {
-    const comment = await db.query(
-      "INSERT INTO comentarios (rating, comentario, id_user, id_pelicula) VALUES ($1, $2, $3, $4) RETURNING *",
-      [rating, comentario, id_user, id_pelicula]
-    );
+//   try {
+//     const comment = await db.query(
+//       "INSERT INTO comentarios (rating, comentario, id_user, id_pelicula) VALUES ($1, $2, $3, $4) RETURNING *",
+//       [rating, comentario, id_user, id_pelicula]
+//     );
 
-    res.status(201).json(comment.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
+//     res.status(201).json(comment.rows[0]);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
 
 server.post('/peliculas/:id_pelicula/comentarios/:id_user', (req, res) => {
   // Obtener los datos del cuerpo de la solicitud
@@ -1169,32 +1169,50 @@ server.put("/api/comments/:id", async (req, res) => {
   }
 });
 
-server.get("/api/comments", async (req, res) => {
+// server.get("/api/comments", async (req, res) => {
+//   try {
+//     const comments = await db.query("SELECT * FROM comentarios");
+//     res.json(comments.rows);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+// server.get("/api/comments/:id", async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const comment = await db.query("SELECT * FROM comentarios WHERE id_comentario = $1", [id]);
+
+//     if (comment.rows.length === 0) {
+//       res.sendStatus(404);
+//     } else {
+//       res.json(comment.rows[0]);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+server.get('/peliculas/:id_pelicula/comentarios', async (req, res) => {
+  const { id_pelicula } = req.params;
+
   try {
-    const comments = await db.query("SELECT * FROM comentarios");
-    res.json(comments.rows);
+    // Ejecuta una consulta para obtener los comentarios de la película desde la base de datos
+    const query = 'SELECT * FROM comentarios WHERE id_pelicula = $1';
+    const values = [id_pelicula];
+    const result = await pool.query(query, values);
+
+    // Devuelve los comentarios como respuesta
+    res.json(result.rows);
   } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
+    console.error('Error al obtener los comentarios:', error);
+    res.status(500).json({ error: 'Error al obtener los comentarios' });
   }
 });
 
-server.get("/api/comments/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const comment = await db.query("SELECT * FROM comentarios WHERE id_comentario = $1", [id]);
-
-    if (comment.rows.length === 0) {
-      res.sendStatus(404);
-    } else {
-      res.json(comment.rows[0]);
-    }
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
 
 server.delete("/api/comments/:id", async (req, res) => {
   const { id } = req.params;
