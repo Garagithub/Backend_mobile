@@ -1139,6 +1139,29 @@ server.post('/peliculas/:id_pelicula/comentarios/:id_user', async (req, res) => 
   }
 });
 
+server.get('/funciones/:id_funcion/pelicula', async (req, res) => {
+  const { id_funcion } = req.params;
+
+  try {
+    // Ejecuta una consulta para obtener el ID de la película asociada a la función
+    const query = 'SELECT id_pelicula FROM funciones WHERE id = $1';
+    const values = [id_funcion];
+    const result = await db.query(query, values);
+
+    // Verifica si se encontró un resultado
+    if (result.rows.length > 0) {
+      const peliculaId = result.rows[0].id_pelicula;
+      res.json({ peliculaId });
+    } else {
+      res.status(404).json({ error: 'Función no encontrada' });
+    }
+  } catch (error) {
+    console.error('Error al obtener el ID de la película:', error);
+    res.status(500).json({ error: 'Error al obtener el ID de la película' });
+  }
+});
+
+
 
 
 server.put("/api/comments/:id", async (req, res) => {
