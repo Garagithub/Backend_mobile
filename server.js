@@ -1373,11 +1373,8 @@ server.get('/api/sucursales/:titulo/getsucursalesbypelicula', async(req,res)=>{
           'INNER JOIN sucursales s ON sa.id_sucursal = s.id'+
           'WHERE p.titulo = $1 returning *',[titulo])
 
-  if (sucursales.ok){
-      res.json(sucursales.rows[0]);
-    }
 
-    res.json(sucursales);
+    res.json(sucursales.rows);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
