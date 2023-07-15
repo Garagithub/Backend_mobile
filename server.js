@@ -1114,6 +1114,23 @@ server.post("/api/comments", async (req, res) => {
   }
 });
 
+server.post('/peliculas/:id_pelicula/comentarios/:id_user', (req, res) => {
+  // Obtener los datos del cuerpo de la solicitud
+  const { id_pelicula, id_user } = req.params;
+  const { rating, comentario } = req.body;
+
+  // Verificar si todos los parámetros requeridos están presentes
+  // if (!rating || !comentario) {
+  //   return res.status(400).json({ error: 'Faltan parámetros obligatorios' });
+  // }
+
+  // Realizar las operaciones necesarias para crear el comentario en la base de datos
+  // Utiliza id_user y id_pelicula para guardar el comentario en la relación adecuada
+
+  // Ejemplo de respuesta exitosa
+  res.status(201).json({ message: 'Comentario creado con éxito' });
+});
+
 server.put("/api/comments/:id", async (req, res) => {
   const { id } = req.params;
   const { rating, comentario, id_user, id_pelicula } = req.body;
