@@ -244,7 +244,7 @@ server.get('/usuarios/:user_email', async (req, res) => {
     const query = 'SELECT * FROM usuarios WHERE mail = $1';
     const values = [user_email];
 
-    const result = await pool.query(query, values);
+    const result = await db.query(query, values);
 
     if (result.rows.length > 0) {
       const usuario = result.rows[0];
