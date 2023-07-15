@@ -1171,7 +1171,7 @@ server.put("/api/comments/:id", async (req, res) => {
   const { id } = req.params;
   const { rating, comentario, id_user, id_pelicula } = req.body;
 
-  // Verificar que los datos sean del tipo correspondiente
+ 
   if (
     typeof rating !== "number" ||
     typeof comentario !== "string" ||
