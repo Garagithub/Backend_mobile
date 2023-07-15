@@ -1386,6 +1386,28 @@ server.post("/api/createuser", async (req, res) => {
     res.sendStatus(500);
   }
 });
+server.get('/api/sucursales/:titulo/getsucursalesbypelicula', async (req, res) => {
+  try {
+    const { titulo } = req.params;
+    const sucursales = await db.query('SELECT s.nombre ' +
+      'FROM peliculas p ' +
+      'INNER JOIN funciones f ON p.id = f.id_pelicula ' +
+      'INNER JOIN salas sa ON f.id_sala = sa.id ' +
+      'INNER JOIN sucursales s ON sa.id_sucursal = s.id ' +
+      'WHERE p.titulo = $1', [titulo]);
+
+    if (sucursales.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(sucursales.rows);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
 
 
 
