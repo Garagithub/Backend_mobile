@@ -1399,7 +1399,7 @@ server.post("/api/createuser", async (req, res) => {
 server.get('/api/sucursales/:titulo/getsucursalesbypelicula', async (req, res) => {
   try {
     const { titulo } = req.params;
-    const sucursales = await db.query('SELECT s.nombre, f.dia,f.id_sala ' +
+    const sucursales = await db.query('SELECT s.nombre, f.dia,f.id_sala,sa.fila,sa.columna ' +
       'FROM peliculas p ' +
       'INNER JOIN funciones f ON p.id = f.id_pelicula ' +
       'INNER JOIN salas sa ON f.id_sala = sa.id ' +
