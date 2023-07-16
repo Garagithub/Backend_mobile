@@ -1540,6 +1540,29 @@ server.get('/api/reservas/checkifseatreserved/:id_funcion/:nro_asiento', async (
   }
 });
 
+server.get('/funciones/:id_funcion/reservados', async (req, res) => {
+  try {
+    const idFuncion = req.params.id_funcion;
+
+    const query = 'SELECT nro_asiento FROM reservas WHERE id_funcion = $1';
+    const values = [idFuncion];
+
+    const result = await db.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No se encontraron asientos reservados para la función' });
+    }
+
+    const reservedSeats = result.rows.map((row) => row.nro_asiento);
+
+    return res.json({ reservedSeats });
+  } catch (error) {
+    console.error('Error al obtener los asientos reservados:', error);
+    return res.status(500).json({ error: 'Ocurrió un error al obtener los asientos reservados' });
+  }
+});
+
+
 
 
 
