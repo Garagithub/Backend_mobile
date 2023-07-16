@@ -1507,9 +1507,9 @@ server.get('/peliculas/:peliculaId/comentarios/promediocalificacion', async (req
     const {peliculaId} = req.params;
     const averageRating = await db.query('SELECT AVG(rating) AS averageRating FROM comentarios WHERE id_pelicula = $1',[peliculaId]);
    
-    if (averageRating.rows.length === 0 || !averageRating.rows[0].averageRating) {
+    /*if (averageRating.rows.length === 0 || !averageRating.rows[0].averageRating) {
       return res.status(404).json({ error: 'No se encontraron comentarios o no hay calificaciones para la película' });
-    }
+    }*/
 
 
     return res.json( averageRating.rows );
