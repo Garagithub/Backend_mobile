@@ -1385,6 +1385,21 @@ server.get("/api/reservas/:id/getbyid", async (req, res) => {
   }
 });
 
+
+// obtener las reservas de 1 usuario en particular
+server.get("/api/reservas/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const reservas = await db.query("SELECT * FROM reservas WHERE id_user = $1", [userId]);
+    res.json(reservas.rows);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+
 server.post("/api/createuser", async (req, res) => {
   try {
     const { nombre, apellido, imagen, mail } = req.body;

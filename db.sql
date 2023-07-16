@@ -29,7 +29,8 @@ CREATE TABLE "usuario" (
   "id" serial PRIMARY KEY,
   "nombre" varchar,
   "apellido" varchar,
-  "imagen" varchar
+  "imagen" varchar,
+  "mail" varchar
 );
 
 
@@ -51,6 +52,7 @@ CREATE TABLE "sucursal" (
 CREATE TABLE sala (
   "id" serial PRIMARY KEY,
   "id_sucursal" integer,
+  "nro_sala" integer, 
   FOREIGN KEY (id_sucursal) references sucursal(id)
 );
 
