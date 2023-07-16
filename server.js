@@ -1394,10 +1394,10 @@ server.get("/api/reservas/:userId", async (req, res) => {
     const reservas = await db.query(`
       SELECT s.nombre AS sucursal, sa.nro_sala, f.dia, f.horario, p.titulo, r.cantidad_entradas, r.nro_asiento
       FROM reservas r
-      JOIN funcion f ON r.id_funcion = f.id
-      JOIN sala sa ON f.id_sala = sa.id
-      JOIN sucursal s ON sa.id_sucursal = s.id
-      JOIN pelicula p ON f.id_pelicula = p.id
+      JOIN funciones f ON r.id_funcion = f.id
+      JOIN salas sa ON f.id_sala = sa.id
+      JOIN sucursales s ON sa.id_sucursal = s.id
+      JOIN peliculas p ON f.id_pelicula = p.id
       WHERE r.id_user = $1
     `, [userId]);
     
