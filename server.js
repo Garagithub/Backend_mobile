@@ -1417,6 +1417,25 @@ server.get('/api/sucursales/:titulo/getsucursalesbypelicula', async (req, res) =
   }
 });
 
+server.get('/api/salas/:titulo/getfilasycolumnas', async (req, res) => {
+  try {
+    const { id_sala } = req.params;
+
+    const fyc = await db.query('SELECT fila,columna ' +
+      'FROM salas '+
+      'WHERE id_sala = $1 and ', [id_sala]);
+
+    if (fyc.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(fyc.rows);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 
 
 
