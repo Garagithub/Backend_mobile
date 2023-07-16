@@ -1275,18 +1275,34 @@ server.delete("/api/comments/:id", async (req, res) => {
 });
 
 // Crear una reserva
+// server.post("/api/reservas/create", async (req, res) => {
+//   try {
+//     const { id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento} = req.body;
+
+//     /*if (!id_funcion || typeof (id_funcion) !== 'number' ||
+//       !id_user || typeof (id_user) !== 'number' ||
+//       !cantidad_entradas || typeof (cantidad_entradas) !== 'number') {
+//       res.sendStatus(400);
+//       return;
+//     }*/
+
+//     const crear_reserva = await db.query("insert into reservas (id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento) values ($1,$2,$3) returning *", [id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento])
+
+//     res.status(201).json(crear_reserva.rows[0]);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
 server.post("/api/reservas/create", async (req, res) => {
   try {
-    const { id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento} = req.body;
+    const { id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento } = req.body;
 
-    /*if (!id_funcion || typeof (id_funcion) !== 'number' ||
-      !id_user || typeof (id_user) !== 'number' ||
-      !cantidad_entradas || typeof (cantidad_entradas) !== 'number') {
-      res.sendStatus(400);
-      return;
-    }*/
-
-    const crear_reserva = await db.query("insert into reservas (id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento) values ($1,$2,$3) returning *", [id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento])
+    const crear_reserva = await db.query(
+      "INSERT INTO reservas (id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento]
+    );
 
     res.status(201).json(crear_reserva.rows[0]);
   } catch (error) {
@@ -1294,6 +1310,7 @@ server.post("/api/reservas/create", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 
 // Actualizar una reserva por ID
 
