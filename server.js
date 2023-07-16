@@ -1502,6 +1502,46 @@ server.get('/api/user/:mail/getuserbymail', async (req, res) => {
   }
 });
 
+server.get('/peliculas/:peliculaId/comentarios/promediocalificacion', async (req, res) => {
+  try {
+    const peliculaId = req.params.peliculaId;
+    const query = 'SELECT AVG(rating) AS averageRating FROM comentarios WHERE id_pelicula = $1';
+    const values = [peliculaId];
+    const result = await db.query(query, values);
+
+    if (result.rows.length === 0 || !result.rows[0].averageRating) {
+      return res.status(404).json({ error: 'No se encontraron comentarios o no hay calificaciones para la película' });
+    }
+
+    const averageRating = result.rows[0].averageRating;
+
+    return res.json({ averageRating });
+  } catch (error) {
+    console.error('Error al calcular el promedio de calificación:', error);
+    return res.status(500).json({ error: 'Ocurrió un error al calcular el promedio de calificación' });
+  }
+});
+
+server.get('/api/reservas/checkifseatreserved/:id_funcion/:nro_asiento', async (req, res) => {
+  try {
+    const { id_funcion, nro_asiento } = req.params;
+
+    // Consultar en la base de datos si el asiento está reservado para la función dada
+    const query = 'SELECT COUNT(*) AS count FROM reservas WHERE id_funcion = $1 AND nro_asiento = $2';
+    const values = [id_funcion, nro_asiento];
+    const result = await db.query(query, values);
+
+    const isReserved = result.rows[0].count > 0; // Verificar si hay alguna fila devuelta (si count > 0)
+
+    res.json({ reserved: isReserved });
+  } catch (error) {
+    console.error('Error al verificar si el asiento está reservado:', error);
+    res.status(500).json({ error: 'Ocurrió un error al verificar si el asiento está reservado' });
+  }
+});
+
+
+
 
 
 
