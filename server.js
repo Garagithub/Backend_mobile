@@ -1392,7 +1392,7 @@ server.get("/api/reservas/:userId", async (req, res) => {
 
   try {
     const reservas = await db.query(`
-      SELECT s.nombre AS sucursal, sa.nro_sala, f.dia, f.horario, p.titulo, r.cantidad_entradas, r.nro_asiento
+      SELECT s.nombre AS sucursal, sa.numero_sala, f.dia, f.horario, p.titulo, r.cantidad_entradas, r.nro_asiento
       FROM reservas r
       JOIN funciones f ON r.id_funcion = f.id
       JOIN salas sa ON f.id_sala = sa.id
