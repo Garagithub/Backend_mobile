@@ -1423,7 +1423,7 @@ server.get('/api/salas/:id_sala/getfilasycolumnas', async (req, res) => {
 
     const fyc = await db.query('SELECT fila,columna ' +
       'FROM salas '+
-      'WHERE id_sala = $1', [id_sala]);
+      'WHERE id = $1', [id_sala]);
 
     if (fyc.rows.length === 0) {
       res.sendStatus(404);
