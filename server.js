@@ -1243,7 +1243,12 @@ server.get('/peliculas/:id_pelicula/comentarios/obtenercomentarios', async (req,
     }
 
     // Ejecuta una consulta para obtener los comentarios de la película desde la base de datos
-    const query = 'SELECT * FROM comentarios WHERE id_pelicula = $1';
+    const query = `
+      SELECT c.*, u.mail AS userEmail
+      FROM comentarios c
+      JOIN usuarios u ON c.id_user = u.id
+      WHERE c.id_pelicula = $1
+    `;
     const values = [id_pelicula];
     const result = await db.query(query, values);
 
@@ -1254,6 +1259,7 @@ server.get('/peliculas/:id_pelicula/comentarios/obtenercomentarios', async (req,
     res.status(500).json({ error: 'Error al obtener los comentarios' });
   }
 });
+
 
 
 
