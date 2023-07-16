@@ -1435,7 +1435,24 @@ server.get('/api/salas/:id_sala/getfilasycolumnas', async (req, res) => {
     res.sendStatus(500);
   }
 });
+server.get('/api/user/:mail/getuserbymail', async (req, res) => {
+  try {
+    const { mail } = req.params;
 
+    const fyc = await db.query('SELECT id ' +
+      'FROM usuarios '+
+      'WHERE mail = $1', [mail]);
+
+    if (fyc.rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.json(fyc.rows);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
 
 
 
