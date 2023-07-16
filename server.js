@@ -1505,15 +1505,14 @@ server.get('/api/user/:mail/getuserbymail', async (req, res) => {
 server.get('/peliculas/:peliculaId/comentarios/promediocalificacion', async (req, res) => {
   try {
     const {peliculaId} = req.params;
-    const query = await db.query('SELECT AVG(rating) AS averageRating FROM comentarios WHERE id_pelicula = $1',[peliculaId]);
+    const averageRating = await db.query('SELECT AVG(rating) AS averageRating FROM comentarios WHERE id_pelicula = $1',[peliculaId]);
    
-    if (result.rows.length === 0 || !result.rows[0].averageRating) {
+    if (averageRating.rows.length === 0 || !averageRating.rows[0].averageRating) {
       return res.status(404).json({ error: 'No se encontraron comentarios o no hay calificaciones para la película' });
     }
 
-    const averageRating = query.rows[0];
 
-    return res.json({ averageRating });
+    return res.json( averageRating.rows );
   } catch (error) {
     console.error('Error al calcular el promedio de calificación:', error);
     return res.status(500).json({ error: 'Ocurrió un error al calcular el promedio de calificación' });
