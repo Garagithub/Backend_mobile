@@ -1277,7 +1277,7 @@ server.delete("/api/comments/:id", async (req, res) => {
 // Crear una reserva
 server.post("/api/reservas", async (req, res) => {
   try {
-    const { id_funcion, id_user, cantidad_entradas } = req.body;
+    const { id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento} = req.body;
 
     if (!id_funcion || typeof (id_funcion) !== 'number' ||
       !id_user || typeof (id_user) !== 'number' ||
@@ -1286,7 +1286,7 @@ server.post("/api/reservas", async (req, res) => {
       return;
     }
 
-    const crear_reserva = await db.query("insert into reservas (id_funcion, id_user, cantidad_entradas) values ($1,$2,$3) returning *", [id_funcion, id_user, cantidad_entradas])
+    const crear_reserva = await db.query("insert into reservas (id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento) values ($1,$2,$3) returning *", [id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento])
 
     res.status(201).json(crear_reserva.rows[0]);
   } catch (error) {
