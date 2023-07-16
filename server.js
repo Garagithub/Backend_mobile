@@ -1279,12 +1279,12 @@ server.post("/api/reservas/create", async (req, res) => {
   try {
     const { id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento} = req.body;
 
-    if (!id_funcion || typeof (id_funcion) !== 'number' ||
+    /*if (!id_funcion || typeof (id_funcion) !== 'number' ||
       !id_user || typeof (id_user) !== 'number' ||
       !cantidad_entradas || typeof (cantidad_entradas) !== 'number') {
       res.sendStatus(400);
       return;
-    }
+    }*/
 
     const crear_reserva = await db.query("insert into reservas (id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento) values ($1,$2,$3) returning *", [id_funcion, id_user, cantidad_entradas,id_sala,nro_asiento])
 
