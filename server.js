@@ -1417,7 +1417,7 @@ server.get('/api/sucursales/:titulo/getsucursalesbypelicula', async (req, res) =
   }
 });
 
-server.get('/api/salas/:titulo/getfilasycolumnas', async (req, res) => {
+server.get('/api/salas/:id_sala/getfilasycolumnas', async (req, res) => {
   try {
     const { id_sala } = req.params;
 
