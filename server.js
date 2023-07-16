@@ -1275,7 +1275,7 @@ server.delete("/api/comments/:id", async (req, res) => {
 });
 
 // Crear una reserva
-server.post("/api/reservas", async (req, res) => {
+server.post("/api/reservas/create", async (req, res) => {
   try {
     const { id_funcion, id_user, cantidad_entradas, id_sala, nro_asiento} = req.body;
 
@@ -1299,7 +1299,7 @@ server.post("/api/reservas", async (req, res) => {
 
 
 // Eliminar una reserva por ID
-server.delete("/api/reservas/:id", async (req, res) => {
+server.delete("/api/reservas/:id/delete", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -1324,7 +1324,7 @@ server.delete("/api/reservas/:id", async (req, res) => {
 });
 
 // Obtener todas las reservas
-server.get("/api/reservas", async (req, res) => {
+server.get("/api/reservas/getall", async (req, res) => {
   try {
 
     const reservas_get = await db.query("SELECT * FROM reservas ");
@@ -1343,7 +1343,7 @@ server.get("/api/reservas", async (req, res) => {
 });
 
 // Obtener una reserva por ID
-server.get("/api/reservas/:id", async (req, res) => {
+server.get("/api/reservas/:id/getbyid", async (req, res) => {
   try {
     const { id_funcion } = req.params;
 
